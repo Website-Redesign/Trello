@@ -30,4 +30,14 @@ public class CommentController {
             userDetails.getUser());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PostMapping("/{cardId}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(
+        @PathVariable Long cardId,
+        @PathVariable Long commentId,
+        @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        commentService.deleteComment(cardId, commentId, userDetails.getUser().getId());
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 }
