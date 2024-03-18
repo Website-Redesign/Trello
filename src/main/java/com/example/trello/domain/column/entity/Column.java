@@ -27,11 +27,11 @@ public class Column extends TimeStamp {
         this.board_id = requestDto.getBoard_id();
     }
 
-    public void setColumn_name(String columnName) {
+    public void setColumnName(String columnName) {
         this.column_name = columnName;
     }
 
-    public void setBoard_id(Long boardId) {
+    public void setBoardId(Long boardId) {
         this.board_id = boardId;
     }
 
