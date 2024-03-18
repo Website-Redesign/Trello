@@ -13,11 +13,11 @@ import lombok.Getter;
 public class ColumnResponseDto {
     private Long id;
     private String column_name;
-    private Long board_id;
+    private Long boardId;
 
     public ColumnResponseDto(Column column) {
         this.id = column.getId();
         this.column_name = column.getColumn_name();
-        this.board_id = column.getBoard_id();
+        this.boardId = column.getBoardId();
     }
 }

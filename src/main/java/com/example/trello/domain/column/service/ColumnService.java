@@ -27,12 +27,17 @@ public class ColumnService {
         return new ColumnResponseDto(updatedColumn);
     }
 
+    public void deleteColumns(Long boardId, Long columnId) {
+        columnRepository.deleteByIdAndBoardId(columnId, boardId);
+    }
+
+    public ColumnResponseDto getColumns(Long boardId, Long columnId) {
+        Column column = getColumnByIdAndBoardId(columnId, boardId);
+        return new ColumnResponseDto(column);
+    }
+
     private Column getColumnByIdAndBoardId(Long columnId, Long boardId) {
         return columnRepository.findByIdAndBoardId(columnId, boardId)
                 .orElseThrow(() -> new RuntimeException("컬럼을 찾을 수 없습니다."));
-    }
-
-    public void deleteColumns(Long boardId, Long columnId) {
-        columnRepository.deleteByIdAndBoardId(columnId, boardId);
     }
 }

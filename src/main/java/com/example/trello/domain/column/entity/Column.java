@@ -20,11 +20,11 @@ public class Column extends TimeStamp {
 
     private String column_name;
 
-    private Long board_id;
+    private Long boardId;
 
     public Column(ColumnRequestDto requestDto) {
         this.column_name = requestDto.getColumn_name();
-        this.board_id = requestDto.getBoard_id();
+        this.boardId = requestDto.getBoard_id();
     }
 
     public void setColumnName(String columnName) {
@@ -32,7 +32,7 @@ public class Column extends TimeStamp {
     }
 
     public void setBoardId(Long boardId) {
-        this.board_id = boardId;
+        this.boardId = boardId;
     }
 
 }
