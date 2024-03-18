@@ -16,7 +16,7 @@ import org.springframework.data.domain.PageRequest;
 public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
-    private final QComment comment;
+    private final QComment comment = QComment.comment1;
 
     @Override
     public Page<Comment> findByCardId(Long cardId, PageRequest pageRequest) {
