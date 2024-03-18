@@ -31,4 +31,12 @@ public class ColumnController {
         ColumnResponseDto columnResponseDto = columnService.updateColumnName(boardId, columnId, columnRequestDto);
         return ResponseEntity.ok(columnResponseDto);
     }
+
+    @DeleteMapping("/{columnId}")
+    public ResponseEntity<ColumnResponseDto> deleteColumn(
+            @PathVariable Long boardId,
+            @PathVariable Long columnId) {
+        columnService.deleteColumns(boardId, columnId);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -28,5 +28,11 @@ public class ColumnService {
     }
 
     private Column getColumnByIdAndBoardId(Long columnId, Long boardId) {
+        return columnRepository.findByIdAndBoardId(columnId, boardId)
+                .orElseThrow(() -> new RuntimeException("컬럼을 찾을 수 없습니다."));
+    }
+
+    public void deleteColumns(Long boardId, Long columnId) {
+        columnRepository.deleteByIdAndBoardId(columnId, boardId);
     }
 }
