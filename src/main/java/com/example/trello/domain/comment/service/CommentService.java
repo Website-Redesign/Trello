@@ -33,11 +33,24 @@ public class CommentService {
     }
 
     @Transactional
+    public void updateComment(Long cardId, Long commentId, Long userId,
+        CommentRequestDto commentRequestDto) {
+
+        Comment comment = checkValidateComment(cardId, commentId, userId);
+
+        comment.update(commentRequestDto.getComment());
+    }
+
+    @Transactional
     public void deleteComment(Long cardId, Long commentId, Long userId) {
 
-        Comment comment = commentRepository.findByCardIdAndCommentIdAndUserId(cardId, commentId,
-            userId).orElseThrow(() -> new CommentNotFoundException("해당 댓글이 존재하지 않습니다."));
+        Comment comment = checkValidateComment(cardId, commentId, userId);
 
         comment.softDelete();
+    }
+
+    private Comment checkValidateComment(Long cardId, Long commentId, Long userId) {
+        return commentRepository.findByCardIdAndCommentIdAndUserId(cardId, commentId,
+            userId).orElseThrow(() -> new CommentNotFoundException("해당 댓글이 존재하지 않습니다."));
     }
 }

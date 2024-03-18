@@ -42,6 +42,10 @@ public class Comment extends TimeStamp {
         this.deletionStatus = DeletionStatus.NOT_DELETED;
     }
 
+    public void update(String comment) {
+        this.comment = comment;
+    }
+
     public void softDelete() {
         this.deletionStatus = DeletionStatus.DELETED;
     }

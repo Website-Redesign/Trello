@@ -10,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,6 +33,18 @@ public class CommentController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PutMapping("/{cardId}/comments/{commentId}")
+    public ResponseEntity<Void> updateComment(
+        @PathVariable Long cardId,
+        @PathVariable Long commentId,
+        @RequestBody CommentRequestDto commentRequestDto,
+        @AuthenticationPrincipal UserDetailsImpl userDetails
+    ) {
+        commentService.updateComment(cardId, commentId, userDetails.getUser().getId(),
+            commentRequestDto);
+        return ResponseEntity.ok().build();
+    }
+
     @DeleteMapping("/{cardId}/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
         @PathVariable Long cardId,
@@ -39,6 +52,6 @@ public class CommentController {
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         commentService.deleteComment(cardId, commentId, userDetails.getUser().getId());
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.ok().build();
     }
 }
