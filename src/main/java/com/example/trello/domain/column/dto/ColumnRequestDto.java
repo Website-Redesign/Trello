@@ -1,5 +1,6 @@
 package com.example.trello.domain.column.dto;
 
+import com.example.trello.domain.column.entity.Column;
 import lombok.Builder;
 import lombok.Getter;
 

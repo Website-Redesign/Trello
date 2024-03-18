@@ -19,4 +19,14 @@ public class ColumnService {
         Column savedColumn = columnRepository.save(column);
         return new ColumnResponseDto(savedColumn);
     }
+
+    public ColumnResponseDto updateColumnName(Long boardId, Long columnId, ColumnRequestDto columnRequestDto) {
+        Column column = getColumnByIdAndBoardId(columnId, boardId);
+        column.setColumnName(columnRequestDto.getColumn_name());
+        Column updatedColumn = columnRepository.save(column);
+        return new ColumnResponseDto(updatedColumn);
+    }
+
+    private Column getColumnByIdAndBoardId(Long columnId, Long boardId) {
+    }
 }
