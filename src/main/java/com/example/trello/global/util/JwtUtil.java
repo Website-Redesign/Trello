@@ -7,14 +7,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import java.security.Key;
-import java.util.Base64;
-import java.util.Date;
 
 @Slf4j(topic = "JwtUtil")
 @Component // bean으로 등록
@@ -47,13 +46,13 @@ public class JwtUtil {
         Date date = new Date();
 
         return BEARER_PREFIX + // bearer 을 앞에 붙어줌
-                Jwts.builder()
-                        .claim("userId", userId)
-                        .claim("email",email)
-                        .claim(AUTHORIZATION_KEY, role) // 사용자 권한
-                        .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
-                        .signWith(key, signatureAlgorithm) // 암호화 알고리즘
-                        .compact();
+            Jwts.builder()
+                .claim("userId", userId)
+                .claim("email", email)
+                .claim(AUTHORIZATION_KEY, role) // 사용자 권한
+                .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
+                .signWith(key, signatureAlgorithm) // 암호화 알고리즘
+                .compact();
     }
 
 

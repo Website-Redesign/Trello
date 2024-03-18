@@ -1,6 +1,5 @@
 package com.example.trello.domain.board.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BoardRequest {
 
-    private Long Id;
+    private Long id;
     private String name;
     private String description;
     private String color;

@@ -20,7 +20,7 @@ public class TimeTraceAspect {
             long finish = System.currentTimeMillis();
             long timeMs = finish - start;
             log.info("Method: {} Execution Time: {}ms", joinPoint.getSignature().toShortString(),
-                    timeMs);
+                timeMs);
         }
     }
 }

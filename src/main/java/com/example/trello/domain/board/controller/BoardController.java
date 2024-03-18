@@ -1,6 +1,5 @@
 package com.example.trello.domain.board.controller;
 
-import com.example.trello.domain.board.dto.BoardInviteUserRequest;
 import com.example.trello.domain.board.dto.BoardRequest;
 import com.example.trello.domain.board.dto.BoardResponse;
 import com.example.trello.domain.board.service.BoardService;
@@ -47,12 +46,14 @@ public class BoardController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/invite")
     public ResponseEntity<CommonResponseDto<BoardResponse>> inviteUser(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @RequestBody BoardRequest request
     ) {
-        boardService.inviteUser(userDetails.getUser(), request);
-
+        BoardResponse response = boardService.inviteUser(userDetails.getUser(), request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+            new CommonResponseDto<>(response)
+        );
     }
 }

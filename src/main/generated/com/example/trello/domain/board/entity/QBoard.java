@@ -29,8 +29,6 @@ public class QBoard extends EntityPathBase<Board> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createAt = _super.createAt;
 
-    public final com.example.trello.domain.user.entity.QUser createdBy;
-
     //inherited
     public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
 
@@ -38,7 +36,11 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
+    public final SetPath<BoardMember, QBoardMember> members = this.<BoardMember, QBoardMember>createSet("members", BoardMember.class, QBoardMember.class, PathInits.DIRECT2);
+
     public final StringPath name = createString("name");
+
+    public final com.example.trello.domain.user.entity.QUser owner;
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
@@ -61,7 +63,7 @@ public class QBoard extends EntityPathBase<Board> {
 
     public QBoard(Class<? extends Board> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.createdBy = inits.isInitialized("createdBy") ? new com.example.trello.domain.user.entity.QUser(forProperty("createdBy")) : null;
+        this.owner = inits.isInitialized("owner") ? new com.example.trello.domain.user.entity.QUser(forProperty("owner")) : null;
     }
 
 }

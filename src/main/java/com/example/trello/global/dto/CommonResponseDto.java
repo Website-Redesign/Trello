@@ -8,5 +8,6 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class CommonResponseDto<T> {
+
     private T date;
 }
