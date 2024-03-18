@@ -1,5 +1,6 @@
 package com.example.trello.domain.column.entity;
 
+import com.example.trello.domain.column.dto.ColumnRequestDto;
 import com.example.trello.global.util.TimeStamp;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,5 +21,18 @@ public class Column extends TimeStamp {
     private String column_name;
 
     private Long board_id;
+
+    public Column(ColumnRequestDto requestDto) {
+        this.column_name = requestDto.getColumn_name();
+        this.board_id = requestDto.getBoard_id();
+    }
+
+    public void setColumn_name(String columnName) {
+        this.column_name = columnName;
+    }
+
+    public void setBoard_id(Long boardId) {
+        this.board_id = boardId;
+    }
 
 }
