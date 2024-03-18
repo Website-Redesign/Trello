@@ -1,8 +1,8 @@
 package com.example.trello.domain.board.controller;
 
+import com.example.trello.domain.board.dto.BoardInviteUserRequest;
 import com.example.trello.domain.board.dto.BoardRequest;
 import com.example.trello.domain.board.dto.BoardResponse;
-import com.example.trello.domain.board.entity.Board;
 import com.example.trello.domain.board.service.BoardService;
 import com.example.trello.global.dto.CommonResponseDto;
 import com.example.trello.global.security.UserDetailsImpl;
@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +36,7 @@ public class BoardController {
         );
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<CommonResponseDto<BoardResponse>> updateBoard(
         @AuthenticationPrincipal UserDetailsImpl userDetails,
         @RequestBody BoardRequest request
@@ -46,5 +45,14 @@ public class BoardController {
         return ResponseEntity.status(HttpStatus.OK).body(
             new CommonResponseDto<>(response)
         );
+    }
+
+    @PostMapping
+    public ResponseEntity<CommonResponseDto<BoardResponse>> inviteUser(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @RequestBody BoardRequest request
+    ) {
+        boardService.inviteUser(userDetails.getUser(), request);
+
     }
 }

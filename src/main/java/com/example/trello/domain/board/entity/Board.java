@@ -5,6 +5,7 @@ import com.example.trello.domain.user.entity.User;
 import com.example.trello.global.util.TimeStamp;
 import jakarta.persistence.*;
 import java.util.List;
+import java.util.Set;
 import lombok.*;
 
 @Entity
@@ -25,15 +26,15 @@ public class Board extends TimeStamp {
 
     private String color;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User createdBy;
+    private User owner;
 
     public Board(User user, BoardRequest request) {
         this.name = request.getName();
         this.description = request.getDescription();
         this.color = request.getColor();
-        this.createdBy = user;
+        this.owner = user;
     }
 
     public void update(BoardRequest request) {

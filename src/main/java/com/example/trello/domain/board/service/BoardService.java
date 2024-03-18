@@ -1,6 +1,7 @@
 package com.example.trello.domain.board.service;
 
 
+import com.example.trello.domain.board.dto.BoardInviteUserRequest;
 import com.example.trello.domain.board.dto.BoardRequest;
 import com.example.trello.domain.board.dto.BoardResponse;
 import com.example.trello.domain.board.entity.Board;
@@ -11,7 +12,6 @@ import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -27,13 +27,14 @@ public class BoardService {
     //수정 필요
     private final UserRepository userRepository;
 
-    public BoardResponse createBoard(User user, BoardRequest request) {
-        Board savedBoard = boardRepository.save(new Board(user, request));
+    public BoardResponse createBoard(User loginUser, BoardRequest request) {
+        Board savedBoard = boardRepository.save(new Board(loginUser, request));
+        boardUserRepository.save(new BoardUser(savedBoard, loginUser));
         List<Long> memberList = request.getMemberList();
-        if (memberList.isEmpty()) {
-            for (Long userId : memberList) {
+        if (!memberList.isEmpty()) {
+            for (Long memberId : memberList) {
                 //유저 받는 부분 UserService 사용으로 수정해야함.
-                User member = userRepository.findById(userId).orElseThrow(
+                User member = userRepository.findById(memberId).orElseThrow(
                     () -> new NoSuchElementException("회원 없음")
                 );
                 boardUserRepository.save(new BoardUser(savedBoard, member));
@@ -49,10 +50,23 @@ public class BoardService {
         return new BoardResponse(board);
     }
 
-    public boolean checkMember(Long boardId, Long userId) {
-        if(boardUserRepository.existsByBoardIdAndUserId(boardId, userId)) return true;
+    public BoardResponse inviteUser(User user, BoardRequest request) {
+        Board board = findBoardById(request.getId());
+        checkOwner(user.getId(), board);
+
+
+    }
+
+    public void checkOwner(Long userId, Board board) {
+        if(userId == board.getOwner().getId()) return;
+        throw new AccessDeniedException("오너만 접근 가능");
+    }
+
+    public void checkMember(Long boardId, Long userId) {
+        if(boardUserRepository.existsByBoardIdAndUserId(boardId, userId)) return;
         throw new AccessDeniedException("멤버만 접근 가능");
     }
+
     public Board findBoardById(Long boardId) {
         return boardRepository.findById(boardId).orElseThrow(
             () -> new NoSuchElementException("보드없음")
