@@ -3,11 +3,14 @@ package com.example.trello.domain.comment.service;
 import com.example.trello.domain.card.entity.Card;
 import com.example.trello.domain.card.repository.CardRepository;
 import com.example.trello.domain.comment.dto.CommentRequestDto;
+import com.example.trello.domain.comment.dto.CommentResponseDto;
 import com.example.trello.domain.comment.entity.Comment;
 import com.example.trello.domain.comment.repository.CommentRepository;
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.global.exception.CommentNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +35,16 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+    public Page<CommentResponseDto> getCommentsByCardId(Long cardId, int page, int size) {
+
+        Page<Comment> commentsPage = commentRepository.findByCardId(cardId,
+            PageRequest.of(page, size));
+
+        return commentsPage.map(
+            comment -> new CommentResponseDto(comment.getCommentId(), comment.getNickname(),
+                comment.getComment(), comment.getCreateAt()));
+    }
+
     @Transactional
     public void updateComment(Long cardId, Long commentId, Long userId,
         CommentRequestDto commentRequestDto) {
@@ -50,7 +63,7 @@ public class CommentService {
     }
 
     private Comment checkValidateComment(Long cardId, Long commentId, Long userId) {
-        return commentRepository.findByCardIdAndCommentIdAndUserId(cardId, commentId,
-            userId).orElseThrow(() -> new CommentNotFoundException("해당 댓글이 존재하지 않습니다."));
+        return commentRepository.findByCardIdAndCommentIdAndUserId(cardId, commentId, userId)
+            .orElseThrow(() -> new CommentNotFoundException("해당 댓글이 존재하지 않습니다."));
     }
 }
