@@ -1,6 +1,7 @@
 package com.example.trello.domain.board.service;
 
 
+import com.example.trello.domain.board.dto.BoardListResponse;
 import com.example.trello.domain.board.dto.BoardRequest;
 import com.example.trello.domain.board.dto.BoardResponse;
 import com.example.trello.domain.board.entity.Board;
@@ -11,6 +12,7 @@ import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.repository.UserRepository;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,16 +26,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final TeamRepository boardUserRepository;
+    private final TeamRepository teamRepository;
 
     @Transactional
     public BoardResponse createBoard(User loginUser, BoardRequest request) {
         Board savedBoard = boardRepository.save(new Board(loginUser, request));
-        boardUserRepository.save(new Team(savedBoard, loginUser));
-        List<Long> memberList = request.getMemberList();
-        for (Long memberId : memberList) {
-            boardUserRepository.save(
-                new Team(savedBoard, User.builder().id(memberId).build()));
+        teamRepository.save(new Team(savedBoard, loginUser));
+        if (request.getMemberList()!=null) {
+            for (Long memberId : request.getMemberList()) {
+                teamRepository.save(
+                    new Team(savedBoard, User.builder().id(memberId).build()));
+            }
         }
         return new BoardResponse(savedBoard);
     }
@@ -52,12 +55,34 @@ public class BoardService {
         checkOwner(user.getId(), board);
         List<Long> memberList = request.getMemberList();
         for (Long memberId : memberList) {
-            if (!boardUserRepository.existsByBoardIdAndUserId(board.getId(), memberId)) { // 중복 체크
-                boardUserRepository.save(
+            if (!teamRepository.existsByBoardIdAndUserId(board.getId(), memberId)) { // 중복 체크
+                teamRepository.save(
                     new Team(board, User.builder().id(memberId).build()));
             }
         }
         return new BoardResponse(board);
+    }
+
+    @Transactional
+    public BoardResponse deleteBoard(User user, Long boardId) {
+        Board board = findBoardById(boardId);
+        checkOwner(user.getId(), board);
+        board.delete();
+        return new BoardResponse(board);
+    }
+
+    public List<BoardListResponse> findBoardCreateByUser(User user) {
+        List<Board> boardsByOwner = boardRepository.findBoardsByOwner(user);
+        return boardsByOwner.stream()
+            .map(BoardListResponse::new)
+            .collect(Collectors.toList());
+    }
+
+    public List<BoardListResponse> findBoardsJoinedByUser(User user) {
+        List<Board> boardsByOwner = boardRepository.findBoardsJoinedByUser(user.getId());
+        return boardsByOwner.stream()
+            .map(BoardListResponse::new)
+            .collect(Collectors.toList());
     }
 
     public void checkOwner(Long userId, Board board) {
@@ -68,7 +93,7 @@ public class BoardService {
     }
 
     public void checkMember(Long boardId, Long userId) {
-        if (boardUserRepository.existsByBoardIdAndUserId(boardId, userId)) {
+        if (teamRepository.existsByBoardIdAndUserId(boardId, userId)) {
             return;
         }
         throw new AccessDeniedException("멤버만 접근 가능");

@@ -36,7 +36,7 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final SetPath<BoardMember, QBoardMember> members = this.<BoardMember, QBoardMember>createSet("members", BoardMember.class, QBoardMember.class, PathInits.DIRECT2);
+    public final SetPath<Team, QTeam> members = this.<Team, QTeam>createSet("members", Team.class, QTeam.class, PathInits.DIRECT2);
 
     public final StringPath name = createString("name");
 

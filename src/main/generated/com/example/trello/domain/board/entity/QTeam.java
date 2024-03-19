@@ -11,16 +11,16 @@ import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
- * QBoardMember is a Querydsl query type for BoardMember
+ * QTeam is a Querydsl query type for Team
  */
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
-public class QBoardMember extends EntityPathBase<BoardMember> {
+public class QTeam extends EntityPathBase<Team> {
 
-    private static final long serialVersionUID = -980019086L;
+    private static final long serialVersionUID = 323945291L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 
-    public static final QBoardMember boardMember = new QBoardMember("boardMember");
+    public static final QTeam team = new QTeam("team");
 
     public final com.example.trello.global.util.QTimeStamp _super = new com.example.trello.global.util.QTimeStamp(this);
 
@@ -39,23 +39,23 @@ public class QBoardMember extends EntityPathBase<BoardMember> {
 
     public final com.example.trello.domain.user.entity.QUser user;
 
-    public QBoardMember(String variable) {
-        this(BoardMember.class, forVariable(variable), INITS);
+    public QTeam(String variable) {
+        this(Team.class, forVariable(variable), INITS);
     }
 
-    public QBoardMember(Path<? extends BoardMember> path) {
+    public QTeam(Path<? extends Team> path) {
         this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
-    public QBoardMember(PathMetadata metadata) {
+    public QTeam(PathMetadata metadata) {
         this(metadata, PathInits.getFor(metadata, INITS));
     }
 
-    public QBoardMember(PathMetadata metadata, PathInits inits) {
-        this(BoardMember.class, metadata, inits);
+    public QTeam(PathMetadata metadata, PathInits inits) {
+        this(Team.class, metadata, inits);
     }
 
-    public QBoardMember(Class<? extends BoardMember> type, PathMetadata metadata, PathInits inits) {
+    public QTeam(Class<? extends Team> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
         this.board = inits.isInitialized("board") ? new QBoard(forProperty("board"), inits.get("board")) : null;
         this.user = inits.isInitialized("user") ? new com.example.trello.domain.user.entity.QUser(forProperty("user")) : null;

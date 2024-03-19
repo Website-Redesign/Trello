@@ -44,7 +44,7 @@ public class Board extends TimeStamp {
     private User owner;
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private Set<BoardMember> members = new LinkedHashSet<>();
+    private Set<Team> members = new LinkedHashSet<>();
 
     public Board(User user, BoardRequest request) {
         this.name = request.getName();
@@ -63,10 +63,5 @@ public class Board extends TimeStamp {
         if (request.getColor() != null) {
             this.color = request.getColor();
         }
-    }
-
-    public void addMember(User user) {
-        BoardMember boardMember = new BoardMember(this, user);
-        members.add(boardMember);
     }
 }
