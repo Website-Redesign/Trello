@@ -30,4 +30,8 @@ public class Worker {
 	@Column(nullable = false)
 	private Long user_id;
 
+	public Worker(Long cardId, Long userId) {
+		this.card_id = cardId;
+		this.user_id = userId;
+	}
 }
