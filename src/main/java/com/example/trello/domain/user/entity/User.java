@@ -30,7 +30,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column
+    @Column(nullable = false, unique = true)
     private String nickname;
 
     @Column
@@ -46,6 +46,12 @@ public class User {
     public User(Long userId, String email) {
         this.id = userId;
         this.email = email;
+    }
+
+    public User(Long userId, String email,UserRoleEnum role) {
+        this.id = userId;
+        this.email = email;
+        this.role = role;
     }
 
     public User(SignupRequestDto requestDto) {

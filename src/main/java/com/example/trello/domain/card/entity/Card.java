@@ -23,7 +23,7 @@ public class Card extends TimeStamp {
 	private Long id;
 
 	@Column(nullable = false)
-	private String card_name;
+	private String cardname;
 
 	@Column(nullable = false)
 	private String description;
@@ -32,18 +32,18 @@ public class Card extends TimeStamp {
 	private String color;
 
 	@Column(nullable = false)
-	private Long column_id;
+	private Long columnId;
 
-	public Card(Long column_id, CardRequestDto requestDto) {
-		card_name = requestDto.getCard_name();
-		description = requestDto.getDescription();
-		color = requestDto.getColor();
-		this.column_id = column_id;
+	public Card(Long columnId, CardRequestDto requestDto) {
+		this.cardname = requestDto.getCardname();
+		this.description = requestDto.getDescription();
+		this.color = requestDto.getColor();
+		this.columnId = columnId;
 	}
 
 	public void update(CardRequestDto requestDto){
-		card_name = requestDto.getCard_name();
-		description = requestDto.getDescription();
-		color = requestDto.getColor();
+		this.cardname = requestDto.getCardname();
+		this.description = requestDto.getDescription();
+		this.color = requestDto.getColor();
 	}
 }

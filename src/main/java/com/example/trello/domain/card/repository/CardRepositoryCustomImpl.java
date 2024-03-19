@@ -5,11 +5,13 @@ import com.example.trello.domain.card.entity.Card;
 import com.example.trello.domain.card.entity.QCard;
 import com.example.trello.domain.user.entity.QUser;
 import com.example.trello.domain.worker.entity.QWorker;
+import com.querydsl.core.types.Operation;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -23,13 +25,8 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 
 	@Override
 	public CardResponseDto getFindCard(Long cardId) {
-		Card query = jpaQueryFactory.select(QCard.card)
-			.from(QCard.card)
-			.where(
-				cardIdEq(cardId)
-			)
-			.fetchOne();
-		//검증
+		Card card = getFindId(cardId).orElseThrow(
+			()-> new IllegalArgumentException("존재하지 않는 카드 입니다."));
 		List<String> works_names = jpaQueryFactory.select(QUser.user.nickname)
 			.from(QUser.user)
 			.innerJoin(QWorker.worker).on(QUser.user.id.eq(QWorker.worker.user_id))
@@ -38,12 +35,22 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 			).fetch()
 			.stream()
 			.toList();
-		return new CardResponseDto(query, works_names);
+		return new CardResponseDto(card, works_names);
 	}
 
 	@Override
 	public void update(Card card) {
 		entityManager.merge(card);
+	}
+
+	public Optional<Card> getFindId(Long cardId){
+		Card query = jpaQueryFactory.select(QCard.card)
+			.from(QCard.card)
+			.where(
+				cardIdEq(cardId)
+			)
+			.fetchOne();
+		return Optional.ofNullable(query);
 	}
 
 	private BooleanExpression cardIdEq(Long cardId) {

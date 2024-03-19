@@ -1,6 +1,7 @@
 package com.example.trello.domain.board.service;
 
 
+import com.example.trello.domain.board.dto.BoardDetailResponse;
 import com.example.trello.domain.board.dto.BoardListResponse;
 import com.example.trello.domain.board.dto.BoardRequest;
 import com.example.trello.domain.board.dto.BoardResponse;
@@ -55,12 +56,13 @@ public class BoardService {
         checkOwner(user.getId(), board);
         List<Long> memberList = request.getMemberList();
         for (Long memberId : memberList) {
-            if (!teamRepository.existsByBoardIdAndUserId(board.getId(), memberId)) { // 중복 체크
+            if (!teamRepository.existsByBoardIdAndUserId(board.getId(), memberId)) {
                 teamRepository.save(
                     new Team(board, User.builder().id(memberId).build()));
             }
         }
         return new BoardResponse(board);
+
     }
 
     @Transactional
@@ -83,6 +85,11 @@ public class BoardService {
         return boardsByOwner.stream()
             .map(BoardListResponse::new)
             .collect(Collectors.toList());
+    }
+
+    public BoardDetailResponse findBoardDetailByBoardId(User user, Long boardId) {
+        checkMember(boardId, user.getId());
+        return boardRepository.findBoardDetailByBoardJoin(boardId);
     }
 
     public void checkOwner(Long userId, Board board) {

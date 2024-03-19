@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +29,7 @@ public class CardController {
 	@PostMapping("/columns/{columnsId}/cards")
 	public ResponseEntity<CommonResponseDto<Void>> createCard(
 		@PathVariable Long columnsId,@AuthenticationPrincipal UserDetailsImpl userDetails,
-		CardRequestDto requestDto){
+		@RequestBody CardRequestDto requestDto){
 		cardService.createCard(columnsId,userDetails.getUser().getId(), requestDto);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
@@ -37,7 +38,7 @@ public class CardController {
 	@PatchMapping("/columns/cards/{cardsId}")
 	public ResponseEntity<CommonResponseDto<Void>> updateCard(
 		@PathVariable Long cardsId,@AuthenticationPrincipal UserDetailsImpl userDetails,
-		CardRequestDto requestDto){
+		@RequestBody CardRequestDto requestDto){
 		cardService.updateCard(cardsId,userDetails.getUser().getId(), requestDto);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
