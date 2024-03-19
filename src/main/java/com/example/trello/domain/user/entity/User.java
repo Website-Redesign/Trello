@@ -48,6 +48,12 @@ public class User {
         this.email = email;
     }
 
+    public User(Long userId, String email,UserRoleEnum role) {
+        this.id = userId;
+        this.email = email;
+        this.role = role;
+    }
+
     public User(SignupRequestDto requestDto) {
         email = requestDto.getEmail();
         password = requestDto.getPassword();
