@@ -33,6 +33,10 @@ public class QComment extends EntityPathBase<Comment> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
 
+    public final EnumPath<DeletionStatus> deletionStatus = createEnum("deletionStatus", DeletionStatus.class);
+
+    public final StringPath nickname = createString("nickname");
+
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 

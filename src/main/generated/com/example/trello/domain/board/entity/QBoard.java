@@ -36,8 +36,6 @@ public class QBoard extends EntityPathBase<Board> {
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final SetPath<Team, QTeam> members = this.<Team, QTeam>createSet("members", Team.class, QTeam.class, PathInits.DIRECT2);
-
     public final StringPath name = createString("name");
 
     public final com.example.trello.domain.user.entity.QUser owner;
