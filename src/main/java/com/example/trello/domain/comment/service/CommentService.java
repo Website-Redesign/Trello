@@ -7,6 +7,7 @@ import com.example.trello.domain.comment.dto.CommentResponseDto;
 import com.example.trello.domain.comment.entity.Comment;
 import com.example.trello.domain.comment.repository.CommentRepository;
 import com.example.trello.domain.user.entity.User;
+import com.example.trello.domain.user.repository.UserRepository;
 import com.example.trello.global.exception.CommentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,6 +23,7 @@ public class CommentService {
 
     // 추후 서비스로 수정
     private final CardRepository cardRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public void createComment(Long cardId, CommentRequestDto commentRequestDto, User user) {
@@ -29,8 +31,11 @@ public class CommentService {
         Card card = cardRepository.findById(cardId)
             .orElseThrow(() -> new IllegalArgumentException("Card not found"));
 
+        String nickname = userRepository.findNicknameById(user.getId())
+            .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
         Comment comment = new Comment(commentRequestDto.getComment(), card.getId(), user.getId(),
-            user.getNickname());
+            nickname);
 
         commentRepository.save(comment);
     }
