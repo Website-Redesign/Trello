@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface CardRepositoryCustom {
 
-	Optional<CardResponseDto> getFindCard(Long cardId);
+	CardResponseDto getFindCard(Long cardId);
 
 	void update(Card card);
 

@@ -41,9 +41,7 @@ public class CardService {
 	}
 
 	public CardResponseDto getCard(Long cardId,Long userId){
-		CardResponseDto responseDto = cardRepository.getFindCard(cardId).orElseThrow(
-			()-> new IllegalArgumentException("존재하지 않는 카드 입니다.")
-		);
+		CardResponseDto responseDto = cardRepository.getFindCard(cardId);
 		//team 에 속해있는지를 확인해 열람 권한 확인 로직 필요
 		return responseDto;
 	}

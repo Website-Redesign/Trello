@@ -1,4 +1,4 @@
-package com.example.trello.domain.card.entity;
+package com.example.trello.domain.worker.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +25,7 @@ public class Worker {
 	private Long id;
 
 	@Column(nullable = false)
-	private Long care_id;
+	private Long card_id;
 
 	@Column(nullable = false)
 	private Long user_id;
