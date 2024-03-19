@@ -1,7 +1,12 @@
 package com.example.trello.domain.comment.entity;
 
 import com.example.trello.global.util.TimeStamp;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,7 +26,27 @@ public class Comment extends TimeStamp {
     @Column(nullable = false)
     private String comment;
 
+    private String nickname;
+
     private Long userId;
 
     private Long cardId;
+
+    private DeletionStatus deletionStatus;
+
+    public Comment(String comment, Long userId, Long cardId, String nickname) {
+        this.comment = comment;
+        this.userId = userId;
+        this.cardId = cardId;
+        this.nickname = nickname;
+        this.deletionStatus = DeletionStatus.NOT_DELETED;
+    }
+
+    public void update(String comment) {
+        this.comment = comment;
+    }
+
+    public void softDelete() {
+        this.deletionStatus = DeletionStatus.DELETED;
+    }
 }
