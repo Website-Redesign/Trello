@@ -26,7 +26,7 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         }
 
         BooleanExpression predicate = comment.cardId.eq(cardId)
-            .and(comment.deletionStatus.eq(DeletionStatus.NOT_DELETED));
+            .and(comment.deletionStatus.eq(DeletionStatus.N));
 
         List<Comment> comments = jpaQueryFactory
             .selectFrom(comment)

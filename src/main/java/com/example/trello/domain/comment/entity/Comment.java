@@ -3,6 +3,8 @@ package com.example.trello.domain.comment.entity;
 import com.example.trello.global.util.TimeStamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,6 +34,7 @@ public class Comment extends TimeStamp {
 
     private Long cardId;
 
+    @Enumerated(EnumType.STRING)
     private DeletionStatus deletionStatus;
 
     public Comment(String comment, Long userId, Long cardId, String nickname) {
@@ -39,7 +42,7 @@ public class Comment extends TimeStamp {
         this.userId = userId;
         this.cardId = cardId;
         this.nickname = nickname;
-        this.deletionStatus = DeletionStatus.NOT_DELETED;
+        this.deletionStatus = DeletionStatus.N;
     }
 
     public void update(String comment) {
@@ -47,6 +50,6 @@ public class Comment extends TimeStamp {
     }
 
     public void softDelete() {
-        this.deletionStatus = DeletionStatus.DELETED;
+        this.deletionStatus = DeletionStatus.Y;
     }
 }
