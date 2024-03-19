@@ -4,8 +4,8 @@ package com.example.trello.domain.board.service;
 import com.example.trello.domain.board.dto.BoardRequest;
 import com.example.trello.domain.board.dto.BoardResponse;
 import com.example.trello.domain.board.entity.Board;
-import com.example.trello.domain.board.entity.BoardMember;
-import com.example.trello.domain.board.repository.BoardMemberRepository;
+import com.example.trello.domain.board.entity.Team;
+import com.example.trello.domain.board.repository.TeamRepository;
 import com.example.trello.domain.board.repository.BoardRepository;
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.repository.UserRepository;
@@ -24,18 +24,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final BoardMemberRepository boardUserRepository;
-    //수정 필요
-    private final UserRepository userRepository;
+    private final TeamRepository boardUserRepository;
 
     @Transactional
     public BoardResponse createBoard(User loginUser, BoardRequest request) {
         Board savedBoard = boardRepository.save(new Board(loginUser, request));
-        boardUserRepository.save(new BoardMember(savedBoard, loginUser));
+        boardUserRepository.save(new Team(savedBoard, loginUser));
         List<Long> memberList = request.getMemberList();
         for (Long memberId : memberList) {
             boardUserRepository.save(
-                new BoardMember(savedBoard, User.builder().id(memberId).build()));
+                new Team(savedBoard, User.builder().id(memberId).build()));
         }
         return new BoardResponse(savedBoard);
     }
@@ -56,7 +54,7 @@ public class BoardService {
         for (Long memberId : memberList) {
             if (!boardUserRepository.existsByBoardIdAndUserId(board.getId(), memberId)) { // 중복 체크
                 boardUserRepository.save(
-                    new BoardMember(board, User.builder().id(memberId).build()));
+                    new Team(board, User.builder().id(memberId).build()));
             }
         }
         return new BoardResponse(board);

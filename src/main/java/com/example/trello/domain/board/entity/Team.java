@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-@Table(name = "BoardMember")
-public class BoardMember extends TimeStamp {
+@Table(name = "Team")
+public class Team extends TimeStamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +36,7 @@ public class BoardMember extends TimeStamp {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public BoardMember(Board board, User user) {
+    public Team(Board board, User user) {
         this.board = board;
         this.user = user;
     }

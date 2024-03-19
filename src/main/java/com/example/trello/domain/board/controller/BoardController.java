@@ -56,4 +56,6 @@ public class BoardController {
             new CommonResponseDto<>(response)
         );
     }
+
+
 }
