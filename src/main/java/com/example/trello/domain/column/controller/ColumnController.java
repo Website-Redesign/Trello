@@ -20,8 +20,18 @@ public class ColumnController {
     public ResponseEntity<ColumnResponseDto> postColumn(
             @PathVariable Long boardId,
             @RequestBody ColumnRequestDto columnRequestDto) {
-        ColumnResponseDto columnResponseDto = columnService.createColumn(boardId, columnRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(columnResponseDto);
+        columnService.createColumn(boardId, columnRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/{columnId}")
+    public ResponseEntity<ColumnResponseDto> getColumn(
+            @PathVariable Long boardId,
+            @PathVariable Long columnId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size){
+        ColumnResponseDto columnResponseDto = columnService.getColumns(boardId, columnId, page, size);
+        return ResponseEntity.ok(columnResponseDto);
     }
 
     @PutMapping("/{columnId}")
@@ -29,8 +39,8 @@ public class ColumnController {
             @PathVariable Long boardId,
             @PathVariable Long columnId,
             @RequestBody ColumnRequestDto columnRequestDto) {
-        ColumnResponseDto columnResponseDto = columnService.updateColumnName(boardId, columnId, columnRequestDto);
-        return ResponseEntity.ok(columnResponseDto);
+        columnService.updateColumnName(boardId, columnId, columnRequestDto);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{columnId}")
@@ -40,13 +50,4 @@ public class ColumnController {
         columnService.deleteColumns(boardId, columnId);
         return ResponseEntity.noContent().build();
     }
-
-    @GetMapping("/{columnId}")
-    public ResponseEntity<ColumnResponseDto> getColumn(
-            @PathVariable Long boardId,
-            @PathVariable Long columnId) {
-        ColumnResponseDto columnResponseDto = columnService.getColumns(boardId, columnId);
-        return ResponseEntity.ok(columnResponseDto);
-    }
-
 }
