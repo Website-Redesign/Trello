@@ -35,7 +35,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         List<Column> columns = jpaQueryFactory.select(column)
             .from(column)
-            .where(column.board_id.eq(boardId))
+            .where(column.boardId.eq(boardId))
             .fetch();
 
         List<Long> columnIds = columns.stream().map(Column::getId).toList();
