@@ -1,8 +1,15 @@
 package com.example.trello.domain.notification.service;
 
+import com.example.trello.domain.comment.entity.Comment;
+import com.example.trello.domain.comment.service.CommentService;
 import com.example.trello.domain.notification.controller.NotificationController;
+import com.example.trello.domain.notification.entity.Notification;
 import com.example.trello.domain.notification.repository.NotificationRepository;
+import com.example.trello.domain.worker.repository.WorkerRepository;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +20,12 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private static Map<Long, Integer> notificationCounts = new HashMap<>();
+
+    private final CommentService commentService;
+
+    // 추후 수정
+    private final WorkerRepository workerRepository;
 
     @Transactional
     public SseEmitter subscribe(Long userId) {
@@ -31,6 +44,46 @@ public class NotificationService {
         sseEmitter.onError((e) -> NotificationController.sseEmitters.remove(userId));
 
         return sseEmitter;
+    }
+
+    @Transactional
+    public void notifyComment(Long cardId) {
+
+        Comment receiveComment = commentService.findLatestComment(cardId);
+
+        List<Long> workers = workerRepository.findByCardId(cardId);
+
+        for (Long workerId : workers) {
+
+            if (NotificationController.sseEmitters.containsKey(workerId)) {
+                SseEmitter sseEmitter = NotificationController.sseEmitters.get(workerId);
+                try {
+                    Map<String, String> eventData = new HashMap<>();
+                    eventData.put("sender", receiveComment.getNickname() + " 님이 댓글을 작성했습니다.");
+                    eventData.put("contents", receiveComment.getComment());
+
+                    sseEmitter.send(SseEmitter.event().name("addComment").data(eventData));
+
+                    Notification notification = Notification.builder()
+                        .cardId(cardId)
+                        .userId(workerId)
+                        .sender(receiveComment.getNickname())
+                        .contents(receiveComment.getComment())
+                        .build();
+
+                    notificationRepository.save(notification);
+
+                    notificationCounts.put(workerId,
+                        notificationCounts.getOrDefault(workerId, 0) + 1);
+
+                    sseEmitter.send(SseEmitter.event().name("notificationCount")
+                        .data(notificationCounts.get(workerId)));
+
+                } catch (IOException e) {
+                    NotificationController.sseEmitters.remove(workerId);
+                }
+            }
+        }
     }
 }
 

@@ -4,6 +4,7 @@ import com.example.trello.domain.card.entity.QCard;
 import com.example.trello.domain.worker.entity.QWorker;
 import com.example.trello.domain.worker.entity.Worker;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -25,5 +26,15 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom{
 			)
 			.fetchOne();
 		return Optional.of(query);
+	}
+
+	@Override
+	public List<Long> findByCardId(Long cardId) {
+		QWorker worker = QWorker.worker;
+
+		return jpaQueryFactory.select(worker.id)
+			.from(worker)
+			.where(worker.card_id.eq(cardId))
+			.fetch();
 	}
 }
