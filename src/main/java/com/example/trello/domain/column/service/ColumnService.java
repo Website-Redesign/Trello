@@ -10,8 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.awt.print.Pageable;
-
 @Service
 @RequiredArgsConstructor
 public class ColumnService {
@@ -27,10 +25,9 @@ public class ColumnService {
 
     @Transactional(readOnly = true)
     public ColumnResponseDto getColumns(Long boardId, Long columnId, int page, int size) {
-        Pageable pageable = (Pageable) PageRequest.of(page - 1, size);
         Column column = columnRepository.findById(columnId)
                 .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 컬럼을 찾을 수 없습니다:" + columnId));
-        Page<Column> columnPage = columnRepository.findByBoardId(boardId, pageable);
+        Page<Column> columnPage = columnRepository.findByBoardId(boardId, PageRequest.of(page - 1, size));
         return new ColumnResponseDto((Column) columnPage.getContent());
 
     }

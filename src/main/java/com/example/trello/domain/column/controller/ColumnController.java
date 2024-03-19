@@ -3,7 +3,6 @@ package com.example.trello.domain.column.controller;
 import com.example.trello.domain.column.dto.ColumnRequestDto;
 import com.example.trello.domain.column.dto.ColumnResponseDto;
 import com.example.trello.domain.column.service.ColumnService;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
