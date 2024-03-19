@@ -2,11 +2,15 @@ package com.example.trello.domain.notification.controller;
 
 import com.example.trello.domain.notification.service.NotificationService;
 import com.example.trello.global.security.UserDetailsImpl;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -23,5 +27,13 @@ public class NotificationController {
     ) {
         SseEmitter sseEmitter = notificationService.subscribe(userDetails.getUser().getId());
         return sseEmitter;
+    }
+
+    @DeleteMapping("/notification/subscribe/{id}")
+    public ResponseEntity<Void> deleteNotification(
+        @PathVariable Long id
+    ) throws IOException {
+        notificationService.deleteNotification(id);
+        return ResponseEntity.ok().build();
     }
 }

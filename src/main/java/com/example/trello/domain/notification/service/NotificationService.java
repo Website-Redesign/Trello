@@ -85,5 +85,30 @@ public class NotificationService {
             }
         }
     }
+
+    public void deleteNotification(Long id) throws IOException {
+
+        Notification notification = notificationRepository.findById(id).orElseThrow(
+            () -> new IllegalArgumentException("알림을 찾을 수 없습니다."));
+
+        Long workerId = 0L;
+
+        if (notification.getCardId() != null) {
+            workerId = notification.getUserId();
+        }
+
+        notificationRepository.delete(notification);
+
+        if (notificationCounts.containsKey(workerId)) {
+            int currentCount = notificationCounts.get(workerId);
+            if (currentCount > 0) {
+                notificationCounts.put(workerId, currentCount - 1);
+            }
+        }
+
+        SseEmitter sseEmitter = NotificationController.sseEmitters.get(workerId);
+        sseEmitter.send(
+            SseEmitter.event().name("notificationCount").data(notificationCounts.get(workerId)));
+    }
 }
 
