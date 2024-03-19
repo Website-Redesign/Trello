@@ -9,5 +9,4 @@ public interface CardRepositoryCustom {
 	CardResponseDto getFindCard(Long cardId);
 
 	void update(Card card);
-
 }

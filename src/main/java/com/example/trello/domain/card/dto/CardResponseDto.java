@@ -11,7 +11,7 @@ public class CardResponseDto {
 
 	private Long cardId;
 
-	private String card_name;
+	private String cardname;
 
 	private String description;
 
@@ -21,7 +21,7 @@ public class CardResponseDto {
 
 	public CardResponseDto(Card card, List<String> workers) {
 		cardId = card.getId();
-		card_name = card.getCard_name();
+		cardname = card.getCardname();
 		description = card.getDescription();
 		color = card.getColor();
 		this.workers = workers;

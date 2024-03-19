@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class CardRequestDto {
 
-	private String card_name;
+	private String cardname;
 
 	private String description;
 
