@@ -6,6 +6,8 @@ import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
+import javax.management.Query;
+
 import com.querydsl.core.types.Path;
 
 
