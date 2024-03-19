@@ -32,7 +32,7 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom{
 	public List<Long> findByCardId(Long cardId) {
 		QWorker worker = QWorker.worker;
 
-		return jpaQueryFactory.select(worker.id)
+		return jpaQueryFactory.select(worker.user_id)
 			.from(worker)
 			.where(worker.card_id.eq(cardId))
 			.fetch();

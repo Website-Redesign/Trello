@@ -34,8 +34,8 @@ public class CommentController {
         @RequestBody CommentRequestDto commentRequestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        notificationService.notifyComment(cardId);
         commentService.createComment(cardId, commentRequestDto, userDetails.getUser());
+        notificationService.notifyComment(cardId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
