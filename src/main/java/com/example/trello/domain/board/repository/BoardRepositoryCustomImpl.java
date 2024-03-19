@@ -42,7 +42,7 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
 
         List<Card> cards = jpaQueryFactory.select(card)
             .from(card)
-            .where(card.column_id.in(columnIds))
+            .where(card.columnId.in(columnIds))
             .fetch();
 
 
