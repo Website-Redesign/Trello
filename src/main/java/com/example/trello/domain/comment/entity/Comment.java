@@ -26,7 +26,27 @@ public class Comment extends TimeStamp {
     @Column(nullable = false)
     private String comment;
 
+    private String nickname;
+
     private Long userId;
 
     private Long cardId;
+
+    private DeletionStatus deletionStatus;
+
+    public Comment(String comment, Long userId, Long cardId, String nickname) {
+        this.comment = comment;
+        this.userId = userId;
+        this.cardId = cardId;
+        this.nickname = nickname;
+        this.deletionStatus = DeletionStatus.NOT_DELETED;
+    }
+
+    public void update(String comment) {
+        this.comment = comment;
+    }
+
+    public void softDelete() {
+        this.deletionStatus = DeletionStatus.DELETED;
+    }
 }
