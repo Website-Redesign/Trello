@@ -43,9 +43,6 @@ public class Board extends TimeStamp {
     @JoinColumn(name = "user_id")
     private User owner;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private Set<Team> members = new LinkedHashSet<>();
-
     public Board(User user, BoardRequest request) {
         this.name = request.getName();
         this.description = request.getDescription();

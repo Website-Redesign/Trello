@@ -1,5 +1,6 @@
 package com.example.trello.domain.board.controller;
 
+import com.example.trello.domain.board.dto.BoardDetailResponse;
 import com.example.trello.domain.board.dto.BoardListResponse;
 import com.example.trello.domain.board.dto.BoardRequest;
 import com.example.trello.domain.board.dto.BoardResponse;
@@ -92,6 +93,18 @@ public class BoardController {
     ) {
         List<BoardListResponse> response = boardService.findBoardsJoinedByUser(
             userDetails.getUser());
+        return ResponseEntity.status(HttpStatus.OK).body(
+            new CommonResponseDto<>(response)
+        );
+    }
+
+    @GetMapping("{boardId}")
+    public ResponseEntity<CommonResponseDto<BoardDetailResponse>> findBoardDetailByBoardId(
+        @AuthenticationPrincipal UserDetailsImpl userDetails,
+        @PathVariable("boardId") Long boardId
+    ) {
+        BoardDetailResponse response = boardService.findBoardDetailByBoardId(
+            userDetails.getUser(), boardId);
         return ResponseEntity.status(HttpStatus.OK).body(
             new CommonResponseDto<>(response)
         );
