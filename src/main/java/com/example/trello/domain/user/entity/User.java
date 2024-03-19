@@ -1,5 +1,7 @@
 package com.example.trello.domain.user.entity;
 
+import com.example.trello.domain.user.dto.SignupRequestDto;
+import com.example.trello.domain.user.dto.UserInfoRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,5 +43,24 @@ public class User {
     public User(Long userId, String email) {
         this.id = userId;
         this.email = email;
+    }
+
+    public User(SignupRequestDto requestDto) {
+        email = requestDto.getEmail();
+        password = requestDto.getPassword();
+        nickname = requestDto.getNickname();
+        introduction = requestDto.getIntroduction();
+        photo = requestDto.getPhoto();
+        role = UserRoleEnum.USER;
+    }
+
+    public void update(UserInfoRequestDto requestDto){
+        nickname = requestDto.getNickname();
+        introduction = requestDto.getIntroduction();
+        photo = requestDto.getPhoto();
+    }
+
+    public void changePassword(String password){
+        this.password = password;
     }
 }
