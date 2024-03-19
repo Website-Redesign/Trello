@@ -3,7 +3,6 @@ package com.example.trello.domain.card.repository;
 import com.example.trello.domain.card.dto.CardResponseDto;
 import com.example.trello.domain.card.entity.Card;
 import com.example.trello.domain.card.entity.QCard;
-import com.example.trello.domain.card.entity.QWorker;
 import com.example.trello.domain.user.entity.QUser;
 import com.example.trello.domain.worker.entity.QWorker;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -11,7 +10,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
