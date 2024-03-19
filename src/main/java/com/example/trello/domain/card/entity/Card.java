@@ -1,5 +1,6 @@
 package com.example.trello.domain.card.entity;
 
+import com.example.trello.domain.card.dto.CardRequestDto;
 import com.example.trello.global.util.TimeStamp;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,19 +17,33 @@ import org.hibernate.annotations.DynamicUpdate;
 @DynamicInsert
 @DynamicUpdate
 public class Card extends TimeStamp {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Column(nullable = false)
-    private String card_name;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 
-    @Column(nullable = false)
-    private String card_explanation;
+	@Column(nullable = false)
+	private String card_name;
 
-    @Column(nullable = false)
-    private String card_color;
+	@Column(nullable = false)
+	private String description;
 
-    @Column(nullable = false)
-    private Long column_id;
+	@Column(nullable = false)
+	private String color;
+
+	@Column(nullable = false)
+	private Long column_id;
+
+	public Card(Long column_id, CardRequestDto requestDto) {
+		card_name = requestDto.getCard_name();
+		description = requestDto.getDescription();
+		color = requestDto.getColor();
+		this.column_id = column_id;
+	}
+
+	public void update(CardRequestDto requestDto){
+		card_name = requestDto.getCard_name();
+		description = requestDto.getDescription();
+		color = requestDto.getColor();
+	}
 }
