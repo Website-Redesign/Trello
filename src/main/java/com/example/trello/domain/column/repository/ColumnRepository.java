@@ -5,6 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ColumnRepository extends JpaRepository<Column, Long> {
-    Page<Column> findByBoardId(Long boardId, Pageable pageable);
+public interface ColumnRepository extends JpaRepository<Column, Long>, ColumnRepositoryCustom {
+    Page<Column> findColumnBysAndBoardId(Long boardId, Pageable pageable);
 }

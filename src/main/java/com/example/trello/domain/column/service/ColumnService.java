@@ -27,9 +27,8 @@ public class ColumnService {
     public ColumnResponseDto getColumns(Long boardId, Long columnId, int page, int size) {
         Column column = columnRepository.findById(columnId)
                 .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 컬럼을 찾을 수 없습니다:" + columnId));
-        Page<Column> columnPage = columnRepository.findByBoardId(boardId, PageRequest.of(page - 1, size));
+        Page<Column> columnPage = columnRepository.findColumnBysAndBoardId(boardId, PageRequest.of(page - 1, size));
         return new ColumnResponseDto((Column) columnPage.getContent());
-
     }
 
     @Transactional

@@ -26,20 +26,20 @@ public class CommentRepositoryCustomImpl implements CommentRepositoryCustom {
         }
 
         BooleanExpression predicate = comment.cardId.eq(cardId)
-            .and(comment.deletionStatus.eq(DeletionStatus.NOT_DELETED));
+                .and(comment.deletionStatus.eq(DeletionStatus.NOT_DELETED));
 
         List<Comment> comments = jpaQueryFactory
-            .selectFrom(comment)
-            .where(predicate)
-            .orderBy(comment.createAt.desc())
-            .offset(pageRequest.getOffset())
-            .limit(pageRequest.getPageSize())
-            .fetch();
+                .selectFrom(comment)
+                .where(predicate)
+                .orderBy(comment.createAt.desc())
+                .offset(pageRequest.getOffset())
+                .limit(pageRequest.getPageSize())
+                .fetch();
 
         long totalCount = jpaQueryFactory
-            .selectFrom(comment)
-            .where(predicate)
-            .fetchCount();
+                .selectFrom(comment)
+                .where(predicate)
+                .fetchCount();
 
         return new PageImpl<>(comments, pageRequest, totalCount);
     }

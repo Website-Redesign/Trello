@@ -16,7 +16,7 @@ public class ColumnController {
     private final ColumnService columnService;
 
     @PostMapping
-    public ResponseEntity<ColumnResponseDto> postColumn(
+    public ResponseEntity<Void> postColumn(
             @PathVariable Long boardId,
             @RequestBody ColumnRequestDto columnRequestDto) {
         columnService.createColumn(boardId, columnRequestDto);
@@ -34,7 +34,7 @@ public class ColumnController {
     }
 
     @PutMapping("/{columnId}")
-    public ResponseEntity<ColumnResponseDto> putColumn(
+    public ResponseEntity<Void> putColumn(
             @PathVariable Long boardId,
             @PathVariable Long columnId,
             @RequestBody ColumnRequestDto columnRequestDto) {
@@ -43,7 +43,7 @@ public class ColumnController {
     }
 
     @DeleteMapping("/{columnId}")
-    public ResponseEntity<ColumnResponseDto> deleteColumn(
+    public ResponseEntity<Void> deleteColumn(
             @PathVariable Long boardId,
             @PathVariable Long columnId) {
         columnService.deleteColumns(boardId, columnId);
