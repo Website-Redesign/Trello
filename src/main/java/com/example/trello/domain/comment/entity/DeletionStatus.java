@@ -4,12 +4,6 @@ import lombok.Getter;
 
 @Getter
 public enum DeletionStatus {
-    DELETED("Y"),
-    NOT_DELETED("N");
-
-    private final String code;
-
-    DeletionStatus(String code) {
-        this.code = code;
-    }
+    Y,
+    N
 }

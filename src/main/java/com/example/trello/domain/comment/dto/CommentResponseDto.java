@@ -1,6 +1,5 @@
 package com.example.trello.domain.comment.dto;
 
-import com.example.trello.domain.comment.entity.Comment;
 import java.time.LocalDateTime;
 import lombok.Getter;
 
@@ -12,16 +11,11 @@ public class CommentResponseDto {
     private String nickname;
     private LocalDateTime createdAt;
 
-    public CommentResponseDto(long commentId, String nickname, String comment,
-        LocalDateTime createAt) {
-    }
-
-    public CommentResponseDto toCommentResponseDto(Comment comment) {
-        return new CommentResponseDto(
-            comment.getCommentId(),
-            comment.getNickname(),
-            comment.getComment(),
-            comment.getCreateAt()
-        );
+    public CommentResponseDto(Long commentId, String nickname, String comment,
+        LocalDateTime createdAt) {
+        this.commentId = commentId;
+        this.nickname = nickname;
+        this.comment = comment;
+        this.createdAt = createdAt;
     }
 }
