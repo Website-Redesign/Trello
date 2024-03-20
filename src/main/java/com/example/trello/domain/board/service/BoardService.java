@@ -89,11 +89,11 @@ public class BoardService {
 
     public BoardDetailResponse findBoardDetailByBoardId(User user, Long boardId) {
         checkMember(boardId, user.getId());
-        return boardRepository.findBoardDetailByBoardJoin(boardId);
+        return boardRepository.findBoardDetailByBoard(boardId);
     }
 
     public void checkOwner(Long userId, Board board) {
-        if (userId == board.getOwner().getId()) {
+        if (userId.equals(board.getOwner().getId())) {
             return;
         }
         throw new AccessDeniedException("오너만 접근 가능");

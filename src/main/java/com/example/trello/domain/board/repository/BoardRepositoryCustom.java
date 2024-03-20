@@ -8,7 +8,7 @@ public interface BoardRepositoryCustom {
 
     List<Board> findBoardsJoinedByUser(Long userId);
 
-    Board findBoardDetailByBoard(Long boardId);
+    BoardDetailResponse findBoardDetailByBoard(Long boardId);
 
-    public BoardDetailResponse findBoardDetailByBoardJoin(Long boardId);
+    BoardDetailResponse findBoardDetailByBoardJoin(Long boardId);
 }
