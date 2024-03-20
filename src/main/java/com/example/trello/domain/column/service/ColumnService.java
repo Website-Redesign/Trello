@@ -17,14 +17,14 @@ public class ColumnService {
     private final ColumnRepository columnRepository;
 
     @Transactional
-    public void createColumn(Long boardId, ColumnRequestDto columnRequestDto) {
+    public void createColumn(Long boardId, Long userId, ColumnRequestDto columnRequestDto) {
         Column column = new Column(columnRequestDto);
         column.setBoardId(boardId);
         columnRepository.save(column);
     }
 
     @Transactional(readOnly = true)
-    public ColumnResponseDto getColumns(Long boardId, Long columnId, int page, int size) {
+    public ColumnResponseDto getColumns(Long boardId, Long columnId, Long userId, int page, int size) {
         Column column = columnRepository.findById(columnId)
                 .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 컬럼을 찾을 수 없습니다:" + columnId));
         Page<Column> columnPage = columnRepository.findColumnsByBoardId(boardId, PageRequest.of(page - 1, size));
@@ -32,7 +32,7 @@ public class ColumnService {
     }
 
     @Transactional
-    public void updateColumnName(Long boardId, Long columnId, ColumnRequestDto columnRequestDto) {
+    public void updateColumnName(Long boardId, Long columnId, Long userId, ColumnRequestDto columnRequestDto) {
         Column column = columnRepository.findById(columnId)
                 .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 컬럼을 찾을 수 없습니다:" + columnId));
         column.setColumnName(columnRequestDto.getColumn_name());
@@ -40,7 +40,7 @@ public class ColumnService {
     }
 
     @Transactional
-    public void deleteColumns(Long boardId, Long columnId) {
+    public void deleteColumns(Long boardId, Long userId, Long columnId) {
         columnRepository.deleteById(columnId);
     }
 }
