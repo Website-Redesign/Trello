@@ -10,4 +10,5 @@ public interface CommentRepository extends JpaRepository<Comment, Long>, Comment
 
     Optional<Comment> findByCardIdAndCommentIdAndUserId(Long cardId, Long commentId, Long userId);
 
+    Optional<Comment> findFirstByCardIdOrderByCreateAtDesc(Long id);
 }

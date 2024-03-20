@@ -10,6 +10,7 @@ import com.example.trello.domain.worker.entity.Worker;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -55,7 +56,7 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 	}
 
 	public Optional<Long> getBoardId(Long columnId) {
-		Long query = jpaQueryFactory.select(QColumn.column.board_id)
+		Long query = jpaQueryFactory.select(QColumn.column.boardId)
 			.from(QColumn.column)
 			.where(
 				columnIdEq(columnId)
@@ -71,6 +72,16 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 
 	private BooleanExpression columnIdEq(Long columnId) {
 		return Objects.nonNull(columnId) ? QColumn.column.id.eq(columnId) : null;
+	}
+
+	@Override
+	public List<Long> findByCardId(Long cardId) {
+		QWorker worker = QWorker.worker;
+
+		return jpaQueryFactory.select(worker.user_id)
+			.from(worker)
+			.where(worker.card_id.eq(cardId))
+			.fetch();
 	}
 
 	private BooleanExpression userIdEq(Long userId) {

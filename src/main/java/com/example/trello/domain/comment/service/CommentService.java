@@ -35,6 +35,7 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+    @Transactional(readOnly = true)
     public Page<CommentResponseDto> getCommentsByCardId(Long cardId, int page, int size) {
 
         Page<Comment> commentsPage = commentRepository.findByCardId(cardId,
@@ -65,5 +66,12 @@ public class CommentService {
     private Comment checkValidateComment(Long cardId, Long commentId, Long userId) {
         return commentRepository.findByCardIdAndCommentIdAndUserId(cardId, commentId, userId)
             .orElseThrow(() -> new CommentNotFoundException("해당 댓글이 존재하지 않습니다."));
+    }
+
+    public Comment findLatestComment(Long postId) {
+        return commentRepository.findFirstByCardIdOrderByCreateAtDesc(
+            postId).orElseThrow(
+            () -> new IllegalArgumentException("댓글을 찾을 수 없습니다.")
+        );
     }
 }

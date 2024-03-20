@@ -21,7 +21,7 @@ public class QColumn extends EntityPathBase<Column> {
 
     public final com.example.trello.global.util.QTimeStamp _super = new com.example.trello.global.util.QTimeStamp(this);
 
-    public final NumberPath<Long> board_id = createNumber("board_id", Long.class);
+    public final NumberPath<Long> boardId = createNumber("boardId", Long.class);
 
     public final StringPath column_name = createString("column_name");
 

@@ -3,6 +3,7 @@ package com.example.trello.domain.comment.controller;
 import com.example.trello.domain.comment.dto.CommentRequestDto;
 import com.example.trello.domain.comment.dto.CommentResponseDto;
 import com.example.trello.domain.comment.service.CommentService;
+import com.example.trello.domain.notification.service.NotificationService;
 import com.example.trello.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CommentController {
 
     private final CommentService commentService;
+    private final NotificationService notificationService;
 
     @PostMapping
     public ResponseEntity<Void> createComment(
@@ -33,6 +35,7 @@ public class CommentController {
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         commentService.createComment(cardId, commentRequestDto, userDetails.getUser());
+        notificationService.notifyComment(cardId);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
