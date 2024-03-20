@@ -34,7 +34,8 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 			.innerJoin(QWorker.worker).on(QUser.user.id.eq(QWorker.worker.userId))
 			.where(
 				QWorker.worker.cardId.eq(cardId),
-				QCard.card.deletedAt.isNull()
+				QWorker.worker.deletedAt.isNull(),
+				QUser.user.deletedAt.isNull()
 			).fetch()
 			.stream()
 			.toList();

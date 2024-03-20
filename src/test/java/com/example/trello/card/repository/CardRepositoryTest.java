@@ -71,7 +71,7 @@ public class CardRepositoryTest {
 		Card card = testCard();
 		cardRepository.save(card);
 		//when
-		Card testCard = cardRepository.findById(card.getId()).get();
+		Card testCard = cardRepository.findByMyId(card.getId()).get();
 		//then
 		assertEquals(card.getId(), testCard.getId());
 		assertEquals(card.getCardname(), testCard.getCardname());
@@ -107,7 +107,7 @@ public class CardRepositoryTest {
 		card.update(requestDto);
 		//when
 		cardRepository.update(card);
-		Card testCard = cardRepository.findById(card.getId()).get();
+		Card testCard = cardRepository.findByMyId(card.getId()).get();
 		//then
 		assertEquals(card.getCardname(), testCard.getCardname());
 		assertEquals(card.getColor(), testCard.getColor());
@@ -123,7 +123,7 @@ public class CardRepositoryTest {
 		//when
 		cardRepository.delete(card);
 		//then
-		assertTrue(cardRepository.findById(card.getId()).isEmpty());
+		assertTrue(cardRepository.findByMyId(card.getId()).isEmpty());
 	}
 
 }
