@@ -28,6 +28,9 @@ public class UserService {
 		if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
 			throw new IllegalArgumentException("중복된 이름을 가진 회원이 있습니다.");
 		}
+		if (userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
+			throw new IllegalArgumentException("중복된 닉네임을 가진 회원이 있습니다.");
+		}
 		String password = passwordEncoder.encode(requestDto.getPassword());
 		requestDto.setPassword(password);
 
@@ -40,6 +43,9 @@ public class UserService {
 		User user = userRepository.findById(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
+		if (userRepository.findByNickname(requestDto.getNickname()).isPresent()&&!user.getNickname().equals(requestDto.getNickname())) {
+			throw new IllegalArgumentException("중복된 닉네임을 가진 회원이 있습니다.");
+		}
 		user.update(requestDto);
 		userRepository.update(user);
 	}
@@ -50,7 +56,7 @@ public class UserService {
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
 		if (!passwordEncoder.matches(user.getPassword(), requestDto.getExistingPassword())) {
-			throw new AccessDeniedException("비밀번호가 틀렸습니다.");
+			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
 		}
 		String password = passwordEncoder.encode(requestDto.getNewPassword());
 		user.changePassword(password);
@@ -63,7 +69,7 @@ public class UserService {
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
 		if (!passwordEncoder.matches(user.getPassword(), requestDto.getPassword())) {
-			throw new AccessDeniedException("비밀번호가 틀렸습니다.");
+			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
 		}
 		userRepository.delete(user);
 	}

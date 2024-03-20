@@ -35,11 +35,11 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 
 	@Override
 	public Optional<User> findByUserIdAndBoardId(Long userId, Long boardId) {
-		User query = jpaQueryFactory.select(QUser.user)
-			.from(QUser.user)
-			.innerJoin(QTeam.team).on(QTeam.team.board.id.eq(boardId))
+		User query = jpaQueryFactory.select(QTeam.team.user)
+			.from(QTeam.team)
 			.where(
-				userIdEq(userId)
+				userIdEq(userId),
+				boardIdEq(boardId)
 			).fetchOne();
 		return Optional.ofNullable(query);
 	}
@@ -85,7 +85,11 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 	}
 
 	private BooleanExpression userIdEq(Long userId) {
-		return Objects.nonNull(userId) ? QUser.user.id.eq(userId) : null;
+		return Objects.nonNull(userId) ? QTeam.team.user.id.eq(userId) : null;
+	}
+
+	private BooleanExpression boardIdEq(Long boardId) {
+		return Objects.nonNull(boardId) ? QTeam.team.board.id.eq(boardId) : null;
 	}
 
 }
