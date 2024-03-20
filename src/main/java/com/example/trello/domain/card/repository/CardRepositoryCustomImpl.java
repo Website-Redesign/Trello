@@ -34,7 +34,8 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 			.from(QUser.user)
 			.innerJoin(QWorker.worker).on(QUser.user.id.eq(QWorker.worker.user_id))
 			.where(
-				QWorker.worker.card_id.eq(cardId)
+				QWorker.worker.card_id.eq(cardId),
+				QCard.card.deletedAt.isNull()
 			).fetch()
 			.stream()
 			.toList();
@@ -48,7 +49,8 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 			.from(QTeam.team)
 			.where(
 				userIdEq(userId),
-				boardIdEq(boardId)
+				boardIdEq(boardId),
+				QTeam.team.deletedAt.isNull()
 			).fetchOne();
 
 		return Optional.ofNullable(query);
@@ -63,7 +65,8 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 		Card query = jpaQueryFactory.select(QCard.card)
 			.from(QCard.card)
 			.where(
-				cardIdEq(cardId)
+				cardIdEq(cardId),
+				QCard.card.deletedAt.isNull()
 			)
 			.fetchOne();
 		return Optional.ofNullable(query);
@@ -73,7 +76,8 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 		Long query = jpaQueryFactory.select(QColumn.column.boardId)
 			.from(QColumn.column)
 			.where(
-				columnIdEq(columnId)
+				columnIdEq(columnId),
+				QColumn.column.deletedAt.isNull()
 			)
 			.fetchOne();
 		return Optional.ofNullable(query);

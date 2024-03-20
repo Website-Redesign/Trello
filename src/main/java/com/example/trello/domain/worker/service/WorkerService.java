@@ -34,7 +34,7 @@ public class WorkerService {
 		Worker worker = workerRepository.findByCardIdAndUserId(cardId, userId).orElseThrow(
 			() -> new IllegalArgumentException("등록되지 않은 유저 입니다.")
 		);
-		workerRepository.delete(worker);
+		worker.delete();
 	}
 
 }

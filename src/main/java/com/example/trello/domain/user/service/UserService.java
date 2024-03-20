@@ -71,7 +71,7 @@ public class UserService {
 		if (!passwordEncoder.matches(user.getPassword(), requestDto.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
 		}
-		userRepository.delete(user);
+		user.delete();
 	}
 
 	public UserResponseDto getUser(Long userId) {

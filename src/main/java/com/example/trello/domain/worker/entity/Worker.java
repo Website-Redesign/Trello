@@ -1,5 +1,6 @@
 package com.example.trello.domain.worker.entity;
 
+import com.example.trello.global.util.TimeStamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +20,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "worker")
 @DynamicInsert
 @DynamicUpdate
-public class Worker {
+public class Worker extends TimeStamp {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;

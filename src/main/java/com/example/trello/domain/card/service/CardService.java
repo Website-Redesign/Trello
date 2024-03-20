@@ -43,7 +43,7 @@ public class CardService {
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
 			() -> new IllegalArgumentException("권한이 없습니다..")
 		);
-		cardRepository.delete(card);
+		card.delete();
 	}
 
 	public CardResponseDto getCard(Long cardId, Long userId) {
