@@ -69,7 +69,7 @@ public class CardServiceTest {
 		requestDto.setCardname("카드명");
 		requestDto.setColor("파란색");
 		requestDto.setDescription("설명들");
-		when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
+		when(cardRepository.findByMyId(1L)).thenReturn(Optional.of(card));
 		when(cardRepository.existsByUserIdAndColumnIdInTeam(1L,1l)).thenReturn(Optional.of(user));
 		//when - then
 		cardService.updateCard(1L,user.getId(),requestDto);
@@ -85,7 +85,7 @@ public class CardServiceTest {
 		requestDto.setCardname("카드명");
 		requestDto.setColor("파란색");
 		requestDto.setDescription("설명들");
-		when(cardRepository.findById(1L)).thenReturn(Optional.of(card));
+		when(cardRepository.findByMyId(1L)).thenReturn(Optional.of(card));
 		when(cardRepository.existsByUserIdAndColumnIdInTeam(1L,1l)).thenReturn(Optional.of(user));
 		//when - then
 		cardService.deleteCard(1L,user.getId());
@@ -103,7 +103,7 @@ public class CardServiceTest {
 		requestDto.setDescription("설명들");
 		List<String> names = new ArrayList<>();
 		CardResponseDto cardResponseDto = new CardResponseDto(card,names);
-		when(cardRepository.findById(card.getId())).thenReturn(Optional.of(card));
+		when(cardRepository.findByMyId(card.getId())).thenReturn(Optional.of(card));
 		when(cardRepository.existsByUserIdAndColumnIdInTeam(user.getId(),1l)).thenReturn(Optional.of(user));
 		when(cardRepository.getFindCard(card.getId())).thenReturn(cardResponseDto);
 		//when

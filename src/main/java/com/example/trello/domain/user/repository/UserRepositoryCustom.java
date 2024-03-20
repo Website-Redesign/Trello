@@ -15,4 +15,6 @@ public interface UserRepositoryCustom {
     Optional<Page<UserResponseDto>> findAllUser(Pageable pageable);
 
     Optional<User> findByNickname(String nickname);
+
+    Optional<User> findByMyId(Long id);
 }

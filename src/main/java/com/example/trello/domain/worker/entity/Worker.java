@@ -26,13 +26,13 @@ public class Worker extends TimeStamp {
 	private Long id;
 
 	@Column(nullable = false)
-	private Long card_id;
+	private Long cardId;
 
 	@Column(nullable = false)
-	private Long user_id;
+	private Long userId;
 
 	public Worker(Long cardId, Long userId) {
-		this.card_id = cardId;
-		this.user_id = userId;
+		this.cardId = cardId;
+		this.userId = userId;
 	}
 }

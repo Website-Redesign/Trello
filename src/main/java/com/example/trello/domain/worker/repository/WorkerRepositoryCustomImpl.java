@@ -26,8 +26,8 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 		Worker query = jpaQueryFactory.select(QWorker.worker)
 			.from(QWorker.worker)
 			.where(
-				QWorker.worker.card_id.eq(cardId),
-				QWorker.worker.user_id.eq(userId),
+				QWorker.worker.cardId.eq(cardId),
+				QWorker.worker.userId.eq(userId),
 				QWorker.worker.deletedAt.isNull()
 			)
 			.fetchOne();
@@ -82,10 +82,10 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 	public List<Long> findByCardId(Long cardId) {
 		QWorker worker = QWorker.worker;
 
-		return jpaQueryFactory.select(worker.user_id)
+		return jpaQueryFactory.select(worker.userId)
 			.from(worker)
 			.where(
-				worker.card_id.eq(cardId),
+				worker.cardId.eq(cardId),
 				worker.deletedAt.isNull()
 			)
 			.fetch();

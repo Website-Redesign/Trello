@@ -40,7 +40,7 @@ public class UserService {
 
 	@Transactional
 	public void updateUser(Long userId, UserInfoRequestDto requestDto) {
-		User user = userRepository.findById(userId).orElseThrow(
+		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
 		if (userRepository.findByNickname(requestDto.getNickname()).isPresent()&&!user.getNickname().equals(requestDto.getNickname())) {
@@ -52,10 +52,10 @@ public class UserService {
 
 	@Transactional
 	public void changePassword(Long userId, ChangePasswordRequestDto requestDto) {
-		User user = userRepository.findById(userId).orElseThrow(
+		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
-		if (!passwordEncoder.matches(user.getPassword(), requestDto.getExistingPassword())) {
+		if (!passwordEncoder.matches(requestDto.getExistingPassword(),user.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
 		}
 		String password = passwordEncoder.encode(requestDto.getNewPassword());
@@ -65,17 +65,18 @@ public class UserService {
 
 	@Transactional
 	public void deleteUser(Long userId, UserDeleteRequestDto requestDto) {
-		User user = userRepository.findById(userId).orElseThrow(
+		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
-		if (!passwordEncoder.matches(user.getPassword(), requestDto.getPassword())) {
+		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
 		}
 		user.delete();
+		//로그아웃 로직 추가
 	}
 
 	public UserResponseDto getUser(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(
+		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
 		return new UserResponseDto(user);

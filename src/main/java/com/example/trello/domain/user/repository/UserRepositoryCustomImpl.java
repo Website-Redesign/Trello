@@ -71,9 +71,25 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 		return Optional.ofNullable(query);
 	}
 
+	@Override
+	public Optional<User> findByMyId(Long id) {
+		User query = jpaQueryFactory.select(QUser.user)
+			.from(QUser.user)
+			.where(
+				userIdEq(id),
+				QUser.user.deletedAt.isNull()
+			)
+			.fetchOne();
+		return Optional.ofNullable(query);
+	}
+
 
 	private BooleanExpression emailEq(String email) {
 		return Objects.nonNull(email) ? QUser.user.email.eq(email) : null;
+	}
+
+	private BooleanExpression userIdEq(Long userId) {
+		return Objects.nonNull(userId) ? QUser.user.id.eq(userId) : null;
 	}
 
 	private BooleanExpression nicknameEq(String nickname) {
