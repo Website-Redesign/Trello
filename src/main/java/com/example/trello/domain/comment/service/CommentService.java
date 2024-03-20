@@ -46,9 +46,7 @@ public class CommentService {
         Page<Comment> commentsPage = commentRepository.findByCardId(cardId,
             PageRequest.of(page, size));
 
-        return commentsPage.map(
-            comment -> new CommentResponseDto(comment.getCommentId(), comment.getNickname(),
-                comment.getComment(), comment.getCreateAt()));
+        return commentsPage.map(Comment::toCommentResponseDto);
     }
 
     @Transactional
