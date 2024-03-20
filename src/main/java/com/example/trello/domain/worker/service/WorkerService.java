@@ -21,7 +21,7 @@ public class WorkerService {
 		Long boardId = workerRepository.getBoardId(columId).orElseThrow(
 			() -> new IllegalArgumentException("존재하지 않는 보드 입니다."));
 		workerRepository.findByUserIdAndBoardId(userId,boardId).orElseThrow(
-			() -> new AccessDeniedException("권한이 없습니다."));
+			() -> new IllegalArgumentException("권한이 없습니다."));
 		if(workerRepository.findByCardIdAndUserId(cardId,userId).isPresent()){
 			throw new IllegalArgumentException("이미 등록된 유저 입니다.");
 		}

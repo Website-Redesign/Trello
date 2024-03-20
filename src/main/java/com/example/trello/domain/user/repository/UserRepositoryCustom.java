@@ -13,4 +13,6 @@ public interface UserRepositoryCustom {
     void update(User user);
 
     Optional<Page<UserResponseDto>> findAllUser(Pageable pageable);
+
+    Optional<User> findByNickname(String nickname);
 }
