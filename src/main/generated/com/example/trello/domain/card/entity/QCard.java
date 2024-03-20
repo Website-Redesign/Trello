@@ -21,11 +21,11 @@ public class QCard extends EntityPathBase<Card> {
 
     public final com.example.trello.global.util.QTimeStamp _super = new com.example.trello.global.util.QTimeStamp(this);
 
-    public final StringPath card_name = createString("card_name");
+    public final StringPath cardname = createString("cardname");
 
     public final StringPath color = createString("color");
 
-    public final NumberPath<Long> column_id = createNumber("column_id", Long.class);
+    public final NumberPath<Long> columnId = createNumber("columnId", Long.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createAt = _super.createAt;
