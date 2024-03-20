@@ -74,6 +74,19 @@ public class UserRepositoryTest {
 	}
 
 	@Test
+	@DisplayName("유저 nickname로 검색 테스트")
+	void findByNicknameTest(){
+		//given
+		User user = testUser();
+		userRepository.save(user);
+		//when
+		User testUser = userRepository.findByNickname(user.getNickname()).get();
+		//then
+		assertEquals(user.getId(), testUser.getId());
+		assertEquals(user.getEmail(),testUser.getEmail());
+	}
+
+	@Test
 	@DisplayName("유저 전체 검색 테스트")
 	void findAllUserTest(){
 		//given

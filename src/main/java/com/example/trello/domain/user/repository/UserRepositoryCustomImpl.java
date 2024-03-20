@@ -55,10 +55,24 @@ public class UserRepositoryCustomImpl implements UserRepositoryCustom{
         return Optional.of(PageableExecutionUtils.getPage(responseDtoList,pageable,()->count));
     }
 
+    @Override
+    public Optional<User> findByNickname(String nickname) {
+        User query = jpaQueryFactory.select(QUser.user)
+            .from(QUser.user)
+            .where(
+                nicknameEq(nickname)
+            )
+            .fetchOne();
+        return Optional.ofNullable(query);
+    }
 
 
     private BooleanExpression emailEq(String email) {
         return Objects.nonNull(email) ? QUser.user.email.eq(email) : null;
+    }
+
+    private BooleanExpression nicknameEq(String nickname) {
+        return Objects.nonNull(nickname) ? QUser.user.nickname.eq(nickname) : null;
     }
 
 }

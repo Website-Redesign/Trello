@@ -51,6 +51,7 @@ public class UserServiceTest {
 		requestDto.setIntroduction("설명");
 		requestDto.setPhoto("사진url");
 		when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.ofNullable(null));
+		when(userRepository.findByNickname(requestDto.getNickname())).thenReturn(Optional.ofNullable(null));
 		//when - then
 		userService.signup(requestDto);
 	}
@@ -65,6 +66,7 @@ public class UserServiceTest {
 		requestDto.setPhoto("새로운 사진");
 		User user = testUser();
 		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+		when(userRepository.findByNickname(requestDto.getNickname())).thenReturn(Optional.ofNullable(null));
 		//when - then
 		userService.updateUser(testUser().getId(),requestDto);
 	}
