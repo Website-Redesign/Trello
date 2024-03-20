@@ -70,7 +70,7 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 	}
 
 	public Optional<Long> getBoardId(Long columnId) {
-		Long query = jpaQueryFactory.select(QColumn.column.board_id)
+		Long query = jpaQueryFactory.select(QColumn.column.boardId)
 			.from(QColumn.column)
 			.where(
 				columnIdEq(columnId)
