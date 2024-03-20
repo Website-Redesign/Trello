@@ -2,6 +2,7 @@ package com.example.trello.domain.user.entity;
 
 import com.example.trello.domain.user.dto.SignupRequestDto;
 import com.example.trello.domain.user.dto.UserInfoRequestDto;
+import com.example.trello.global.util.TimeStamp;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +19,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @Table(name = "users")
 @DynamicInsert
 @DynamicUpdate
-public class User {
+public class User extends TimeStamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,4 +73,6 @@ public class User {
     public void changePassword(String password){
         this.password = password;
     }
+
+
 }

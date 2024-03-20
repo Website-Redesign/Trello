@@ -19,6 +19,7 @@ public class SignupRequestDto {
 	@Pattern(regexp = "^[a-zA-Z0-9]*$", message = "비밀번호는 알파벳과 숫자로 구성할 수 있습니다.")
 	private String password;
 
+	@NotBlank
 	private String nickname;
 
 	private String introduction;

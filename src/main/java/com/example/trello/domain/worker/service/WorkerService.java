@@ -28,13 +28,13 @@ public class WorkerService {
         workerRepository.save(worker);
     }
 
-    @Transactional
-    public void deleteWorker(Long cardId, Long userId) {
-        Worker worker = workerRepository.findByCardIdAndUserId(cardId, userId).orElseThrow(
-            () -> new IllegalArgumentException("등록되지 않은 유저 입니다.")
-        );
-        workerRepository.delete(worker);
-    }
+	@Transactional
+	public void deleteWorker(Long cardId, Long userId) {
+		Worker worker = workerRepository.findByCardIdAndUserId(cardId, userId).orElseThrow(
+			() -> new IllegalArgumentException("등록되지 않은 유저 입니다.")
+		);
+		worker.delete();
+	}
 
     public List<Long> findByCardId(Long cardId) {
         return workerRepository.findByCardId(cardId);

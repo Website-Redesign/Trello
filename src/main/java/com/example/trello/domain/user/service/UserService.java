@@ -37,49 +37,49 @@ public class UserService {
         userRepository.save(user);
     }
 
-    @Transactional
-    public void updateUser(Long userId, UserInfoRequestDto requestDto) {
-        User user = userRepository.findById(userId).orElseThrow(
-            () -> new IllegalArgumentException("계정 정보가 없습니다.")
-        );
-        if (userRepository.findByNickname(requestDto.getNickname()).isPresent()
-            && !user.getNickname().equals(requestDto.getNickname())) {
-            throw new IllegalArgumentException("중복된 닉네임을 가진 회원이 있습니다.");
-        }
-        user.update(requestDto);
-        userRepository.update(user);
-    }
+	@Transactional
+	public void updateUser(Long userId, UserInfoRequestDto requestDto) {
+		User user = userRepository.findByMyId(userId).orElseThrow(
+			() -> new IllegalArgumentException("계정 정보가 없습니다.")
+		);
+		if (userRepository.findByNickname(requestDto.getNickname()).isPresent()&&!user.getNickname().equals(requestDto.getNickname())) {
+			throw new IllegalArgumentException("중복된 닉네임을 가진 회원이 있습니다.");
+		}
+		user.update(requestDto);
+		userRepository.update(user);
+	}
 
-    @Transactional
-    public void changePassword(Long userId, ChangePasswordRequestDto requestDto) {
-        User user = userRepository.findById(userId).orElseThrow(
-            () -> new IllegalArgumentException("계정 정보가 없습니다.")
-        );
-        if (!passwordEncoder.matches(user.getPassword(), requestDto.getExistingPassword())) {
-            throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
-        }
-        String password = passwordEncoder.encode(requestDto.getNewPassword());
-        user.changePassword(password);
-        userRepository.update(user);
-    }
+	@Transactional
+	public void changePassword(Long userId, ChangePasswordRequestDto requestDto) {
+		User user = userRepository.findByMyId(userId).orElseThrow(
+			() -> new IllegalArgumentException("계정 정보가 없습니다.")
+		);
+		if (!passwordEncoder.matches(requestDto.getExistingPassword(),user.getPassword())) {
+			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+		}
+		String password = passwordEncoder.encode(requestDto.getNewPassword());
+		user.changePassword(password);
+		userRepository.update(user);
+	}
 
-    @Transactional
-    public void deleteUser(Long userId, UserDeleteRequestDto requestDto) {
-        User user = userRepository.findById(userId).orElseThrow(
-            () -> new IllegalArgumentException("계정 정보가 없습니다.")
-        );
-        if (!passwordEncoder.matches(user.getPassword(), requestDto.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
-        }
-        userRepository.delete(user);
-    }
+	@Transactional
+	public void deleteUser(Long userId, UserDeleteRequestDto requestDto) {
+		User user = userRepository.findByMyId(userId).orElseThrow(
+			() -> new IllegalArgumentException("계정 정보가 없습니다.")
+		);
+		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+		}
+		user.delete();
+		//로그아웃 로직 추가
+	}
 
-    public UserResponseDto getUser(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(
-            () -> new IllegalArgumentException("계정 정보가 없습니다.")
-        );
-        return new UserResponseDto(user);
-    }
+	public UserResponseDto getUser(Long userId) {
+		User user = userRepository.findByMyId(userId).orElseThrow(
+			() -> new IllegalArgumentException("계정 정보가 없습니다.")
+		);
+		return new UserResponseDto(user);
+	}
 
     public Page<UserResponseDto> getAllUsers() {
         return userRepository.findAllUser(PageRequest.of(0, 10)).orElseThrow(
