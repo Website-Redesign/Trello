@@ -1,4 +1,4 @@
-package com.example.trello.user.controller;
+package com.example.trello.card.controller;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -7,17 +7,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.trello.domain.user.controller.UserController;
-import com.example.trello.domain.user.dto.ChangePasswordRequestDto;
-import com.example.trello.domain.user.dto.SignupRequestDto;
-import com.example.trello.domain.user.dto.UserDeleteRequestDto;
-import com.example.trello.domain.user.dto.UserInfoRequestDto;
+import com.example.trello.domain.card.controller.CardController;
+import com.example.trello.domain.card.dto.CardRequestDto;
+import com.example.trello.domain.card.service.CardService;
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.entity.UserRoleEnum;
-import com.example.trello.domain.user.service.UserService;
 import com.example.trello.global.config.WebSecurityConfig;
 import com.example.trello.global.security.CustomAuthentication;
-import com.example.trello.global.security.CustomAuthenticationToken;
 import com.example.trello.global.security.UserDetailsImpl;
 import com.example.trello.global.util.JwtUtil;
 import com.example.trello.mvc.MockSpringSecurityFilter;
@@ -32,13 +28,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @WebMvcTest(
-	controllers = UserController.class,
+	controllers = CardController.class,
 	excludeFilters = {
 		@ComponentScan.Filter(
 			type = FilterType.ASSIGNABLE_TYPE,
@@ -46,7 +41,7 @@ import org.springframework.web.context.WebApplicationContext;
 		)
 	}
 )
-class UserControllerTest {
+public class CardControllerTest {
 
 	private MockMvc mvc;
 
@@ -59,7 +54,7 @@ class UserControllerTest {
 	private ObjectMapper objectMapper;
 
 	@MockBean
-	private UserService userService;
+	private CardService cardService;
 
 	@MockBean
 	JwtUtil jwtUtil;
@@ -81,37 +76,18 @@ class UserControllerTest {
 	}
 
 	@Test
-	@DisplayName("회원가입 테스트")
-	void signup() throws Exception {
+	@DisplayName("카드 생성 테스트")
+	void createCard() throws Exception {
 		//given
-		SignupRequestDto requestDto = new SignupRequestDto();
-		requestDto.setEmail("test@naver.com");
-		requestDto.setPassword("12345678");
-		requestDto.setNickname("test");
-		requestDto.setIntroduction("설명");
-		requestDto.setPhoto("사진url");
-
-		String requestBody = objectMapper.writeValueAsString(requestDto);
-		//when - then
-		mvc.perform(post("/users/signup")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(requestBody))
-			.andExpect(status().isOk());
-
-	}
-
-	@Test
-	@DisplayName("유저 정보 갱신 테스트")
-	void updateUser() throws Exception {
-		//given
-		UserInfoRequestDto requestDto = new UserInfoRequestDto();
-		requestDto.setNickname("테스터");
-		requestDto.setIntroduction("새로운설명");
-		requestDto.setPhoto("새로운 사진");
+		CardRequestDto requestDto = new CardRequestDto();
+		requestDto.setCardname("카드명");
+		requestDto.setColor("파란색");
+		requestDto.setDescription("설명들");
 		this.testUser();
+
 		String requestBody = objectMapper.writeValueAsString(requestDto);
 		//when - then
-		mvc.perform(patch("/users")
+		mvc.perform(post("/boards/columns/1/cards")
 				.contentType(MediaType.APPLICATION_JSON)
 				.principal(mockPrincipal)
 				.content(requestBody))
@@ -119,16 +95,18 @@ class UserControllerTest {
 	}
 
 	@Test
-	@DisplayName("비밀번호 변경 테스트")
-	void changePasswordTest() throws Exception {
+	@DisplayName("카드 수정 테스트")
+	void updateCard() throws Exception {
 		//given
-		ChangePasswordRequestDto requestDto = new ChangePasswordRequestDto();
-		requestDto.setExistingPassword("12345678");
-		requestDto.setNewPassword("test123456");
+		CardRequestDto requestDto = new CardRequestDto();
+		requestDto.setCardname("카드명");
+		requestDto.setColor("파란색");
+		requestDto.setDescription("설명들");
 		this.testUser();
+
 		String requestBody = objectMapper.writeValueAsString(requestDto);
 		//when - then
-		mvc.perform(patch("/users/change-password")
+		mvc.perform(patch("/boards/columns/cards/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.principal(mockPrincipal)
 				.content(requestBody))
@@ -136,48 +114,26 @@ class UserControllerTest {
 	}
 
 	@Test
-	@DisplayName("회원탈퇴 테스트")
-	void deleteUserTest() throws Exception {
+	@DisplayName("카드 삭제 테스트")
+	void deleteCard() throws Exception {
 		//given
-		UserDeleteRequestDto requestDto = new UserDeleteRequestDto();
-		requestDto.setPassword("12345678");
 		this.testUser();
-		String requestBody = objectMapper.writeValueAsString(requestDto);
+
 		//when - then
-		mvc.perform(delete("/users")
+		mvc.perform(delete("/boards/columns/cards/1")
 				.contentType(MediaType.APPLICATION_JSON)
-				.principal(mockPrincipal)
-				.content(requestBody))
+				.principal(mockPrincipal))
 			.andExpect(status().isOk());
 	}
 
 	@Test
-	@DisplayName("특정회원 정보보기 테스트")
-	void getUserTest() throws Exception {
-		//given
-		//when - then
-		mvc.perform(get("/users/1")
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk());
-	}
-
-	@Test
-	@DisplayName("전체회원 정보보기 테스트")
-	void getAllUserTest() throws Exception {
-		//given
-		//when - then
-		mvc.perform(get("/users")
-				.contentType(MediaType.APPLICATION_JSON))
-			.andExpect(status().isOk());
-	}
-
-	@Test
-	@DisplayName("나의 정보보기 테스트")
-	void getMyPageTest() throws Exception {
+	@DisplayName("카드 정보보기 테스트")
+	void getCard() throws Exception {
 		//given
 		this.testUser();
+
 		//when - then
-		mvc.perform(get("/users/my-page")
+		mvc.perform(get("/boards/columns/cards/1")
 				.contentType(MediaType.APPLICATION_JSON)
 				.principal(mockPrincipal))
 			.andExpect(status().isOk());
