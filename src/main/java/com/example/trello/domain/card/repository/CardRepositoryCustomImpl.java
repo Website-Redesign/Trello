@@ -1,9 +1,12 @@
 package com.example.trello.domain.card.repository;
 
+import com.example.trello.domain.board.entity.QTeam;
 import com.example.trello.domain.card.dto.CardResponseDto;
 import com.example.trello.domain.card.entity.Card;
 import com.example.trello.domain.card.entity.QCard;
+import com.example.trello.domain.column.entity.QColumn;
 import com.example.trello.domain.user.entity.QUser;
+import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.worker.entity.QWorker;
 import com.querydsl.core.types.Operation;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -39,6 +42,19 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 	}
 
 	@Override
+	public Optional<User> existsByUserIdAndColumnIdInTeam(Long userId,Long columnId) {
+		Long boardId = getBoardId(columnId).get();
+		User query = jpaQueryFactory.select(QTeam.team.user)
+			.from(QTeam.team)
+			.where(
+				userIdEq(userId),
+				boardIdEq(boardId)
+			).fetchOne();
+
+		return Optional.ofNullable(query);
+	}
+
+	@Override
 	public void update(Card card) {
 		entityManager.merge(card);
 	}
@@ -53,8 +69,30 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 		return Optional.ofNullable(query);
 	}
 
+	public Optional<Long> getBoardId(Long columnId) {
+		Long query = jpaQueryFactory.select(QColumn.column.boardId)
+			.from(QColumn.column)
+			.where(
+				columnIdEq(columnId)
+			)
+			.fetchOne();
+		return Optional.ofNullable(query);
+	}
+
 	private BooleanExpression cardIdEq(Long cardId) {
 		return Objects.nonNull(cardId) ? QCard.card.id.eq(cardId) : null;
+	}
+
+	private BooleanExpression columnIdEq(Long columnId) {
+		return Objects.nonNull(columnId) ? QColumn.column.id.eq(columnId) : null;
+	}
+
+	private BooleanExpression userIdEq(Long userId) {
+		return Objects.nonNull(userId) ? QTeam.team.user.id.eq(userId) : null;
+	}
+
+	private BooleanExpression boardIdEq(Long boardId) {
+		return Objects.nonNull(boardId) ? QTeam.team.board.id.eq(boardId) : null;
 	}
 
 }
