@@ -3,6 +3,7 @@ package com.example.trello.user.repository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.example.trello.config.TestConfig;
+import com.example.trello.domain.user.dto.SignupRequestDto;
 import com.example.trello.domain.user.dto.UserResponseDto;
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.entity.UserRoleEnum;
@@ -25,7 +26,13 @@ public class UserRepositoryTest {
 	UserRepository userRepository;
 
 	private User testUser(){
-		return new User(1L,"test@gmail.com","12345678","닉네임","설명","사진url",UserRoleEnum.USER);
+		SignupRequestDto requestDto = new SignupRequestDto();
+		requestDto.setEmail("test@naver.com");
+		requestDto.setPassword("12345678");
+		requestDto.setNickname("test");
+		requestDto.setIntroduction("설명");
+		requestDto.setPhoto("사진url");
+		return new User(requestDto);
 	}
 
 	@Test

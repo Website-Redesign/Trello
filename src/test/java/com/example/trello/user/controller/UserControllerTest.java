@@ -16,6 +16,8 @@ import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.entity.UserRoleEnum;
 import com.example.trello.domain.user.service.UserService;
 import com.example.trello.global.config.WebSecurityConfig;
+import com.example.trello.global.security.CustomAuthentication;
+import com.example.trello.global.security.CustomAuthenticationToken;
 import com.example.trello.global.security.UserDetailsImpl;
 import com.example.trello.global.util.JwtUtil;
 import com.example.trello.mvc.MockSpringSecurityFilter;
@@ -75,8 +77,7 @@ class UserControllerTest {
 		UserRoleEnum role = UserRoleEnum.USER;
 		User user = new User(userId, email, role);
 		UserDetailsImpl testUserDetails = new UserDetailsImpl(user);
-		mockPrincipal = new UsernamePasswordAuthenticationToken(testUserDetails, "",
-			testUserDetails.getAuthorities());
+		mockPrincipal = new CustomAuthentication(testUserDetails);
 	}
 
 	@Test
