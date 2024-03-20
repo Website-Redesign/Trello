@@ -12,47 +12,53 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CardService {
 
-	private final CardRepository cardRepository;
+    private final CardRepository cardRepository;
 
-	@Transactional
-	public void createCard(Long columnId, Long userId, CardRequestDto requestDto) {
-		cardRepository.existsByUserIdAndColumnIdInTeam(userId, columnId).orElseThrow(
-			() -> new IllegalArgumentException("권한이 없습니다..")
-		);
-		Card card = new Card(columnId, requestDto);
-		cardRepository.save(card);
-	}
+    @Transactional
+    public void createCard(Long columnId, Long userId, CardRequestDto requestDto) {
+        cardRepository.existsByUserIdAndColumnIdInTeam(userId, columnId).orElseThrow(
+            () -> new IllegalArgumentException("권한이 없습니다..")
+        );
+        Card card = new Card(columnId, requestDto);
+        cardRepository.save(card);
+    }
 
-	@Transactional
-	public void updateCard(Long cardId, Long userId, CardRequestDto requestDto) {
-		Card card = cardRepository.findById(cardId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
-		);
-		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
-			() -> new IllegalArgumentException("권한이 없습니다..")
-		);
-		card.update(requestDto);
-		cardRepository.update(card);
-	}
+    @Transactional
+    public void updateCard(Long cardId, Long userId, CardRequestDto requestDto) {
+        Card card = cardRepository.findById(cardId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+        );
+        cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
+            () -> new IllegalArgumentException("권한이 없습니다..")
+        );
+        card.update(requestDto);
+        cardRepository.update(card);
+    }
 
-	@Transactional
-	public void deleteCard(Long cardId, Long userId) {
-		Card card = cardRepository.findById(cardId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
-		);
-		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
-			() -> new IllegalArgumentException("권한이 없습니다..")
-		);
-		cardRepository.delete(card);
-	}
+    @Transactional
+    public void deleteCard(Long cardId, Long userId) {
+        Card card = cardRepository.findById(cardId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+        );
+        cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
+            () -> new IllegalArgumentException("권한이 없습니다..")
+        );
+        cardRepository.delete(card);
+    }
 
-	public CardResponseDto getCard(Long cardId, Long userId) {
-		Card card = cardRepository.findById(cardId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
-		);
-		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
-			() -> new IllegalArgumentException("권한이 없습니다..")
-		);
-		return cardRepository.getFindCard(cardId);
-	}
+    public CardResponseDto getCard(Long cardId, Long userId) {
+        Card card = cardRepository.findById(cardId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+        );
+        cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
+            () -> new IllegalArgumentException("권한이 없습니다..")
+        );
+        return cardRepository.getFindCard(cardId);
+    }
+
+    public Card findCard(Long cardId) {
+        return cardRepository.findById(cardId).orElseThrow(
+            () -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+        );
+    }
 }

@@ -5,7 +5,7 @@ import com.example.trello.domain.comment.service.CommentService;
 import com.example.trello.domain.notification.controller.NotificationController;
 import com.example.trello.domain.notification.entity.Notification;
 import com.example.trello.domain.notification.repository.NotificationRepository;
-import com.example.trello.domain.worker.repository.WorkerRepository;
+import com.example.trello.domain.worker.service.WorkerService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -20,12 +20,10 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private static Map<Long, Integer> notificationCounts = new HashMap<>();
-
     private final CommentService commentService;
+    private final WorkerService workerService;
 
-    // 추후 수정
-    private final WorkerRepository workerRepository;
+    private static Map<Long, Integer> notificationCounts = new HashMap<>();
 
     @Transactional
     public SseEmitter subscribe(Long userId) {
@@ -51,7 +49,7 @@ public class NotificationService {
 
         Comment receiveComment = commentService.findLatestComment(cardId);
 
-        List<Long> workers = workerRepository.findByCardId(cardId);
+        List<Long> workers = workerService.findByCardId(cardId);
 
         for (Long workerId : workers) {
 
