@@ -8,6 +8,7 @@ import com.example.trello.domain.user.dto.UserResponseDto;
 import com.example.trello.domain.user.service.UserService;
 import com.example.trello.global.dto.CommonResponseDto;
 import com.example.trello.global.security.UserDetailsImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -53,8 +54,19 @@ public class UserController {
 
 	@DeleteMapping("/users")
 	public ResponseEntity<CommonResponseDto<Void>> deleteUser(
-		@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody UserDeleteRequestDto requestDto){
-		userService.deleteUser(userDetails.getUser().getId(),requestDto);
+		@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody UserDeleteRequestDto requestDto,
+		HttpServletRequest req){
+		String token = req.getHeader("Authorization");
+		userService.deleteUser(userDetails.getUser().getId(),requestDto,token);
+		return ResponseEntity.ok()
+			.body(CommonResponseDto.<Void>builder().build());
+	}
+
+	@GetMapping("/users/logout")
+	public ResponseEntity<CommonResponseDto<Void>> logout(
+		HttpServletRequest req){
+		String token = req.getHeader("Authorization");
+		userService.logout(token);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
 	}

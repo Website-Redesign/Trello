@@ -95,7 +95,7 @@ public class UserServiceTest {
 		when(passwordEncoder.matches(requestDto.getPassword(),testUser().getPassword())).thenReturn(true);
 		when(userRepository.findByMyId(user.getId())).thenReturn(Optional.of(user));
 		//when - then
-		userService.deleteUser(user.getId(),requestDto);
+		userService.deleteUser(user.getId(),requestDto,"token");
 	}
 
 	@Test

@@ -4,6 +4,7 @@ import com.example.trello.domain.user.entity.User;
 import com.example.trello.global.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -12,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -35,6 +37,9 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
         if (StringUtils.hasText(tokenValue)) {
 
             try {
+                if(!jwtUtil.validateToken(tokenValue)){
+                    throw new java.security.SignatureException("로그아웃 상태입니다.");
+                }
                 Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
                 setAuthentication(info);
             } catch (SecurityException | MalformedJwtException | SignatureException e) {

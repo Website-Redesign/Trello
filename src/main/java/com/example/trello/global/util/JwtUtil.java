@@ -1,8 +1,10 @@
 package com.example.trello.global.util;
 
 import com.example.trello.domain.user.entity.UserRoleEnum;
+import com.example.trello.global.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -10,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Base64;
 import java.util.Date;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,7 +20,10 @@ import org.springframework.util.StringUtils;
 
 @Slf4j(topic = "JwtUtil")
 @Component // bean으로 등록
+@RequiredArgsConstructor
 public class JwtUtil {
+
+    private final RedisUtil redisUtil;
 
     // Header KEY 값
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -27,6 +33,8 @@ public class JwtUtil {
     public static final String BEARER_PREFIX = "Bearer ";
     //토큰 만료시간
     private final long TOKEN_TIME = 60 * 60 * 1000L;
+
+    private final long REFRESHTOKENTIME = 60*30*1000L;
 
     @Value("${jwt.secret.key}") //application.properties에 들어있던 값이 들어감
     private String secretKey;
@@ -42,10 +50,10 @@ public class JwtUtil {
     }
 
     // 토큰 생성
-    public String createToken(Long userId, String email, UserRoleEnum role) {
+    public TokenDto createToken(Long userId, String email, UserRoleEnum role) {
         Date date = new Date();
 
-        return BEARER_PREFIX + // bearer 을 앞에 붙어줌
+        String accessToken = BEARER_PREFIX + // bearer 을 앞에 붙어줌
             Jwts.builder()
                 .claim("userId", userId)
                 .claim("email", email)
@@ -53,6 +61,18 @@ public class JwtUtil {
                 .setExpiration(new Date(date.getTime() + TOKEN_TIME)) // 만료 시간
                 .signWith(key, signatureAlgorithm) // 암호화 알고리즘
                 .compact();
+
+        String refreshToken =   BEARER_PREFIX +
+            Jwts.builder()
+            .claim("userId", userId)
+            .claim("email", email)
+            .setIssuedAt(new Date(date.getTime())) // 토큰 발행 시간 정보
+            .setExpiration(new Date(date.getTime() + REFRESHTOKENTIME)) // set Expire Time
+            .signWith(key, signatureAlgorithm)  // 사용할 암호화 알고리즘과
+            // signature 에 들어갈 secret값 세팅
+            .compact();
+
+        return TokenDto.builder().accessToken(accessToken).refreshToken(refreshToken).key(email).build();
     }
 
 
@@ -70,5 +90,29 @@ public class JwtUtil {
     public Claims getUserInfoFromToken(String token) {
         //validateToken에서 검증을 한 토큰의 body를 가져옴 claims라는 데이터의 집합으로 반환함
         return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            if(redisUtil.hasKeyBlackList(token)) {
+                return false;
+            }
+            return true;
+        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+            log.error("토큰검증오류");
+            return false;
+        }
+    }
+
+    public Long getExpiration(String accessToken) {
+        Date expiration = Jwts.parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(accessToken)
+            .getBody()
+            .getExpiration();
+        Long now = new Date().getTime();
+        return (expiration.getTime() - now);
     }
 }
