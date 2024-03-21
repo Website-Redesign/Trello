@@ -56,6 +56,8 @@ class CommentServiceTest {
     Long testCommentId;
     User testUser;
     Card testCard;
+    Comment testComment;
+    CommentRequestDto commentRequestDto;
 
     private Card testCard() {
         CardRequestDto requestDto = new CardRequestDto();
@@ -77,6 +79,13 @@ class CommentServiceTest {
         testCommentId = 3L;
         testUser = testUser();
         testCard = testCard();
+
+        commentRequestDto = new CommentRequestDto();
+        commentRequestDto.setComment("comment");
+
+        testComment = new Comment(commentRequestDto.getComment(), testUserId,
+            testCardId, "nickname");
+        ReflectionTestUtils.setField(testComment, "commentId", testCommentId);
     }
 
     /*
@@ -110,18 +119,13 @@ class CommentServiceTest {
         @DisplayName("전달받은 각 id에 해당하는 댓글이 존재하지 않을 경우, 댓글 수정 실패 테스트")
         void updateCommentFailureTest() {
 
-            Long testCommentId = 123L;
+            Long notExistCommentId = 123L;
 
             CommentRequestDto commentRequestDto = new CommentRequestDto();
             commentRequestDto.setComment("update comment");
 
-            Comment testComment = new Comment(commentRequestDto.getComment(), testUserId,
-                testCardId,
-                "nickname");
-            ReflectionTestUtils.setField(testComment, "commentId", 4L);
-
             assertThrows(CommentNotFoundException.class, () -> {
-                commentService.updateComment(testCardId, testCommentId, testUserId,
+                commentService.updateComment(testCardId, notExistCommentId, testUserId,
                     commentRequestDto);
             });
         }
@@ -132,10 +136,6 @@ class CommentServiceTest {
 
             CommentRequestDto commentRequestDto = new CommentRequestDto();
             commentRequestDto.setComment("update comment");
-
-            Comment testComment = new Comment(commentRequestDto.getComment(), testUserId,
-                testCardId, "nickname");
-            ReflectionTestUtils.setField(testComment, "commentId", testCommentId);
 
             given(commentRepository.findByCardIdAndCommentIdAndUserId(anyLong(), anyLong(),
                 anyLong())).willReturn(Optional.of(testComment));
@@ -153,12 +153,6 @@ class CommentServiceTest {
         @DisplayName("댓글의 DeletionStatus 값이 Y로 변경될 경우, 댓글 삭제 성공 테스트")
         void softDeleteCommentSuccessTest() {
 
-            CommentRequestDto commentRequestDto = new CommentRequestDto();
-            commentRequestDto.setComment("update comment");
-
-            Comment testComment = new Comment(commentRequestDto.getComment(), testUserId,
-                testCardId, "nickname");
-            ReflectionTestUtils.setField(testComment, "commentId", testCommentId);
             ReflectionTestUtils.setField(testComment, "deletionStatus", DeletionStatus.N);
 
             given(commentRepository.findByCardIdAndCommentIdAndUserId(anyLong(), anyLong(),
@@ -193,6 +187,33 @@ class CommentServiceTest {
                 page, size);
 
             assertEquals(size, resultPage.getContent().size());
+        }
+    }
+
+    @Nested
+    class FindLatestComment {
+
+        @Test
+        @DisplayName("존재하지 않는 cardId 인 경우, 댓글 찾기 실패 테스트")
+        void cardIdNotFoundTest() {
+
+            Long notExistCardId = 123L;
+
+            assertThrows(IllegalArgumentException.class, () -> {
+                commentService.findLatestComment(notExistCardId);
+            });
+        }
+
+        @Test
+        @DisplayName("가장 최신에 생성된 댓글 찾기 성공 테스트")
+        void findLatestCommentTest() {
+
+            given(commentRepository.findFirstByCardIdOrderByCreateAtDesc(anyLong())).willReturn(
+                Optional.of(testComment));
+
+            Comment result = commentService.findLatestComment(testCardId);
+
+            assertEquals(testComment.getComment(), result.getComment());
         }
     }
 }
