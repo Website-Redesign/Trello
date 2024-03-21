@@ -14,6 +14,7 @@ import com.example.trello.domain.card.entity.Card;
 import com.example.trello.domain.card.service.CardService;
 import com.example.trello.domain.comment.dto.CommentRequestDto;
 import com.example.trello.domain.comment.entity.Comment;
+import com.example.trello.domain.comment.entity.DeletionStatus;
 import com.example.trello.domain.comment.repository.CommentRepository;
 import com.example.trello.domain.comment.service.CommentService;
 import com.example.trello.domain.user.entity.User;
@@ -136,6 +137,30 @@ class CommentServiceTest {
             commentService.updateComment(testCardId, testCommentId, testUserId, commentRequestDto);
 
             assertEquals(commentRequestDto.getComment(), testComment.getComment());
+        }
+    }
+
+    @Nested
+    class softDeleteCommentTest {
+
+        @Test
+        @DisplayName("댓글의 DeletionStatus 값이 Y로 변경될 경우, 댓글 삭제 성공 테스트")
+        void softDeleteCommentSuccessTest() {
+
+            CommentRequestDto commentRequestDto = new CommentRequestDto();
+            commentRequestDto.setComment("update comment");
+
+            Comment testComment = new Comment(commentRequestDto.getComment(), testUserId,
+                testCardId, "nickname");
+            ReflectionTestUtils.setField(testComment, "commentId", testCommentId);
+            ReflectionTestUtils.setField(testComment, "deletionStatus", DeletionStatus.N);
+
+            given(commentRepository.findByCardIdAndCommentIdAndUserId(anyLong(), anyLong(),
+                anyLong())).willReturn(Optional.of(testComment));
+
+            commentService.deleteComment(testCardId, testCommentId, testUserId);
+
+            assertEquals(testComment.getDeletionStatus(), DeletionStatus.Y);
         }
     }
 }
