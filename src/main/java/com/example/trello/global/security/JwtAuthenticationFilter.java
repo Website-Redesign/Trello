@@ -2,7 +2,6 @@ package com.example.trello.global.security;
 
 import com.example.trello.domain.user.dto.LoginRequestDto;
 import com.example.trello.domain.user.entity.User;
-import com.example.trello.domain.user.entity.UserRoleEnum;
 import com.example.trello.domain.user.repository.UserRepository;
 import com.example.trello.global.dto.TokenDto;
 import com.example.trello.global.util.JwtUtil;
@@ -66,8 +65,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         HttpServletResponse response, FilterChain chain, Authentication authResult)
         throws IOException {
         User user = (User) authResult.getPrincipal();
-        TokenDto token = jwtUtil.createToken(user.getId(), user.getEmail(),
-            UserRoleEnum.USER);
+        String token = jwtUtil.createToken(user.getId(), user.getEmail());
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
         ObjectNode json = new ObjectMapper().createObjectNode();
         json.put("message", "상태코드:200 로그인성공                     ");

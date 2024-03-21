@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -56,17 +57,24 @@ public class UserController {
 	public ResponseEntity<CommonResponseDto<Void>> deleteUser(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody UserDeleteRequestDto requestDto,
 		HttpServletRequest req){
-		String token = req.getHeader("Authorization");
-		userService.deleteUser(userDetails.getUser().getId(),requestDto,token);
+		String bearerToken = req.getHeader("Authorization");
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+			bearerToken = bearerToken.substring(7);
+		}
+		userService.deleteUser(userDetails.getUser().getId(),requestDto,bearerToken);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
 	}
 
 	@GetMapping("/users/logout")
 	public ResponseEntity<CommonResponseDto<Void>> logout(
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
 		HttpServletRequest req){
-		String token = req.getHeader("Authorization");
-		userService.logout(token);
+		String bearerToken = req.getHeader("Authorization");
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+			bearerToken = bearerToken.substring(7);
+		}
+		userService.logout(userDetails.getUser().getId(),bearerToken);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
 	}

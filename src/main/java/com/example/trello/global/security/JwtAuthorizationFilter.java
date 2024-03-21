@@ -1,7 +1,11 @@
 package com.example.trello.global.security;
 
+import static org.hibernate.internal.CoreLogging.logger;
+
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.global.util.JwtUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -32,11 +36,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
         FilterChain filterChain) throws ServletException, IOException {
-
         String tokenValue = jwtUtil.getJwtFromHeader(req);
         if (StringUtils.hasText(tokenValue)) {
-
             try {
+                Date date = new Date();
+                if(jwtUtil.getMemberInfoFromExpiredToken(tokenValue).getExpiration().compareTo(date)<0) {
+                    String token = jwtUtil.validateRefreshToken(
+                        jwtUtil.getMemberInfoFromExpiredToken(tokenValue).get("userId",
+                            Long.class));
+                    res.addHeader(JwtUtil.AUTHORIZATION_HEADER, token);
+                    ObjectNode json = new ObjectMapper().createObjectNode();
+                    json.put("message", "새로운 토큰이 발급되었습니다.                          ");
+                    String newResponse = new ObjectMapper().writeValueAsString(json);
+                    res.setContentType("application/json");
+                    res.setContentLength(newResponse.length());
+                    res.getOutputStream().write(newResponse.getBytes());
+                    return;
+                }
                 if(!jwtUtil.validateToken(tokenValue)){
                     throw new java.security.SignatureException("로그아웃 상태입니다.");
                 }
@@ -47,6 +63,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 return;
             } catch (ExpiredJwtException e) {
                 log.error("Expired JWT token, 만료된 JWT token 입니다.");
+                //예외 안던지고 준다 굳이 던져줄 필요 없다. 사용성이 안좋아진다. 던져주면 프론트 해줘
                 return;
             } catch (UnsupportedJwtException e) {
                 log.error("Unsupported JWT token, 지원되지 않는 JWT 토큰 입니다.");
