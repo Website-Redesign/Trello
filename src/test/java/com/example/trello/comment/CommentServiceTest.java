@@ -13,6 +13,7 @@ import com.example.trello.domain.card.dto.CardRequestDto;
 import com.example.trello.domain.card.entity.Card;
 import com.example.trello.domain.card.service.CardService;
 import com.example.trello.domain.comment.dto.CommentRequestDto;
+import com.example.trello.domain.comment.dto.CommentResponseDto;
 import com.example.trello.domain.comment.entity.Comment;
 import com.example.trello.domain.comment.entity.DeletionStatus;
 import com.example.trello.domain.comment.repository.CommentRepository;
@@ -21,6 +22,8 @@ import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.entity.UserRoleEnum;
 import com.example.trello.domain.user.service.UserService;
 import com.example.trello.global.exception.CommentNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +33,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.util.ReflectionTestUtils;
 
 
@@ -161,6 +167,32 @@ class CommentServiceTest {
             commentService.deleteComment(testCardId, testCommentId, testUserId);
 
             assertEquals(testComment.getDeletionStatus(), DeletionStatus.Y);
+        }
+    }
+
+    @Nested
+    class getCommentByCardIdTest {
+
+        @Test
+        @DisplayName("해당 카드의 id로 댓글 전체 페이지 조회")
+        void getCommentsByCardIdTest() {
+            int page = 0;
+            int size = 10;
+            List<Comment> comments = new ArrayList<>();
+            for (int i = 0; i < size; i++) {
+                Comment comment = new Comment("comment" + i, testUserId, testCardId, "nickname");
+                comments.add(comment);
+            }
+            Page<Comment> commentsPage = new PageImpl<>(comments);
+
+            given(
+                commentRepository.findByCardId(testCardId, PageRequest.of(page, size))).willReturn(
+                commentsPage);
+
+            Page<CommentResponseDto> resultPage = commentService.getCommentsByCardId(testCardId,
+                page, size);
+
+            assertEquals(size, resultPage.getContent().size());
         }
     }
 }
