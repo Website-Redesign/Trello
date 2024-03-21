@@ -18,61 +18,83 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class UserRepositoryCustomImpl implements UserRepositoryCustom{
+public class UserRepositoryCustomImpl implements UserRepositoryCustom {
 
-    private final JPAQueryFactory jpaQueryFactory;
+	private final JPAQueryFactory jpaQueryFactory;
 
-    private final EntityManager entityManager;
+	private final EntityManager entityManager;
 
-    @Override
-    public Optional<User> findByEmail(String email) {
-        User query = jpaQueryFactory.select(QUser.user)
-                .from(QUser.user)
-                .where(
-                        emailEq(email)
-                )
-                .fetchOne();
-        return Optional.ofNullable(query);
-    }
+	@Override
+	public Optional<User> findByEmail(String email) {
+		User query = jpaQueryFactory.select(QUser.user)
+			.from(QUser.user)
+			.where(
+				emailEq(email),
+				QUser.user.deletedAt.isNull()
+			)
+			.fetchOne();
+		return Optional.ofNullable(query);
+	}
 
-    @Override
-    public void update(User user) {
-        entityManager.merge(user);
-    }
+	@Override
+	public void update(User user) {
+		entityManager.merge(user);
+	}
 
-    @Override
-    public Optional<Page<UserResponseDto>> findAllUser(Pageable pageable) {
-        List<User> query = jpaQueryFactory.select(QUser.user)
-            .from(QUser.user)
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
-        List<UserResponseDto> responseDtoList = query.stream().map(UserResponseDto::new).toList();
-        Long count = jpaQueryFactory.select(Wildcard.count)
-            .from(QUser.user)
-            .fetch()
-            .get(0);
-        return Optional.of(PageableExecutionUtils.getPage(responseDtoList,pageable,()->count));
-    }
+	@Override
+	public Optional<Page<UserResponseDto>> findAllUser(Pageable pageable) {
+		List<User> query = jpaQueryFactory.select(QUser.user)
+			.from(QUser.user)
+			.where(
+				QUser.user.deletedAt.isNull()
+			)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.fetch();
+		List<UserResponseDto> responseDtoList = query.stream().map(UserResponseDto::new).toList();
+		Long count = jpaQueryFactory.select(Wildcard.count)
+			.from(QUser.user)
+			.fetch()
+			.get(0);
+		return Optional.of(PageableExecutionUtils.getPage(responseDtoList, pageable, () -> count));
+	}
 
-    @Override
-    public Optional<User> findByNickname(String nickname) {
-        User query = jpaQueryFactory.select(QUser.user)
-            .from(QUser.user)
-            .where(
-                nicknameEq(nickname)
-            )
-            .fetchOne();
-        return Optional.ofNullable(query);
-    }
+	@Override
+	public Optional<User> findByNickname(String nickname) {
+		User query = jpaQueryFactory.select(QUser.user)
+			.from(QUser.user)
+			.where(
+				nicknameEq(nickname),
+				QUser.user.deletedAt.isNull()
+			)
+			.fetchOne();
+		return Optional.ofNullable(query);
+	}
+
+	@Override
+	public Optional<User> findByMyId(Long id) {
+		User query = jpaQueryFactory.select(QUser.user)
+			.from(QUser.user)
+			.where(
+				userIdEq(id),
+				QUser.user.deletedAt.isNull()
+			)
+			.fetchOne();
+		return Optional.ofNullable(query);
+	}
 
 
-    private BooleanExpression emailEq(String email) {
-        return Objects.nonNull(email) ? QUser.user.email.eq(email) : null;
-    }
+	private BooleanExpression emailEq(String email) {
+		return Objects.nonNull(email) ? QUser.user.email.eq(email) : null;
+	}
 
-    private BooleanExpression nicknameEq(String nickname) {
-        return Objects.nonNull(nickname) ? QUser.user.nickname.eq(nickname) : null;
-    }
+	private BooleanExpression userIdEq(Long userId) {
+		return Objects.nonNull(userId) ? QUser.user.id.eq(userId) : null;
+	}
+
+	private BooleanExpression nicknameEq(String nickname) {
+		return Objects.nonNull(nickname) ? QUser.user.nickname.eq(nickname) : null;
+	}
+
 
 }

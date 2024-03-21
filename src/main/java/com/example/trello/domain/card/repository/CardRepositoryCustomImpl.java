@@ -8,7 +8,6 @@ import com.example.trello.domain.column.entity.QColumn;
 import com.example.trello.domain.user.entity.QUser;
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.worker.entity.QWorker;
-import com.querydsl.core.types.Operation;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
@@ -28,13 +27,15 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 
 	@Override
 	public CardResponseDto getFindCard(Long cardId) {
-		Card card = getFindId(cardId).orElseThrow(
-			()-> new IllegalArgumentException("존재하지 않는 카드 입니다."));
+		Card card = findByMyId(cardId).orElseThrow(
+			() -> new IllegalArgumentException("존재하지 않는 카드 입니다."));
 		List<String> works_names = jpaQueryFactory.select(QUser.user.nickname)
 			.from(QUser.user)
-			.innerJoin(QWorker.worker).on(QUser.user.id.eq(QWorker.worker.user_id))
+			.innerJoin(QWorker.worker).on(QUser.user.id.eq(QWorker.worker.userId))
 			.where(
-				QWorker.worker.card_id.eq(cardId)
+				QWorker.worker.cardId.eq(cardId),
+				QWorker.worker.deletedAt.isNull(),
+				QUser.user.deletedAt.isNull()
 			).fetch()
 			.stream()
 			.toList();
@@ -42,15 +43,30 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 	}
 
 	@Override
-	public Optional<User> existsByUserIdAndColumnIdInTeam(Long userId,Long columnId) {
-		Long boardId = getBoardId(columnId).get();
+	public Optional<User> existsByUserIdAndColumnIdInTeam(Long userId, Long columnId) {
+		Long boardId = getBoardId(columnId).orElseThrow(
+			() -> new IllegalArgumentException("해당 하는 Id의 보드가 없습니다.")
+		);
 		User query = jpaQueryFactory.select(QTeam.team.user)
 			.from(QTeam.team)
 			.where(
 				userIdEq(userId),
-				boardIdEq(boardId)
+				boardIdEq(boardId),
+				QTeam.team.deletedAt.isNull()
 			).fetchOne();
 
+		return Optional.ofNullable(query);
+	}
+
+	@Override
+	public Optional<Card> findByMyId(Long cardId) {
+		Card query = jpaQueryFactory.select(QCard.card)
+			.from(QCard.card)
+			.where(
+				cardIdEq(cardId),
+				QCard.card.deletedAt.isNull()
+			)
+			.fetchOne();
 		return Optional.ofNullable(query);
 	}
 
@@ -59,21 +75,12 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 		entityManager.merge(card);
 	}
 
-	public Optional<Card> getFindId(Long cardId){
-		Card query = jpaQueryFactory.select(QCard.card)
-			.from(QCard.card)
-			.where(
-				cardIdEq(cardId)
-			)
-			.fetchOne();
-		return Optional.ofNullable(query);
-	}
-
 	public Optional<Long> getBoardId(Long columnId) {
 		Long query = jpaQueryFactory.select(QColumn.column.boardId)
 			.from(QColumn.column)
 			.where(
-				columnIdEq(columnId)
+				columnIdEq(columnId),
+				QColumn.column.deletedAt.isNull()
 			)
 			.fetchOne();
 		return Optional.ofNullable(query);

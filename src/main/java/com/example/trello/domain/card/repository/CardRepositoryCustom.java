@@ -11,5 +11,7 @@ public interface CardRepositoryCustom {
 
 	Optional<User> existsByUserIdAndColumnIdInTeam(Long userId,Long columnId);
 
+	Optional<Card> findByMyId(Long cardId);
+
 	void update(Card card);
 }

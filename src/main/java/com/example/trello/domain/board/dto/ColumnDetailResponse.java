@@ -1,5 +1,8 @@
 package com.example.trello.domain.board.dto;
 
+import com.example.trello.domain.card.entity.Card;
+import com.example.trello.domain.column.entity.Column;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,5 +13,14 @@ public class ColumnDetailResponse {
 
     private Long columnId;
     private String columnName;
-    private List<CardDetailResponse> cards;
+    private List<CardDetailResponse> cards = new ArrayList<>();
+
+    public ColumnDetailResponse(Column column) {
+        this.columnId = column.getId();
+        this.columnName = column.getColumn_name();
+    }
+
+    public void addCard(Card card) {
+        cards.add(new CardDetailResponse(card));
+    }
 }
