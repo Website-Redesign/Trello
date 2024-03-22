@@ -67,9 +67,9 @@ public class CommentService {
             .orElseThrow(() -> new CommentNotFoundException("해당 댓글이 존재하지 않습니다."));
     }
 
-    public Comment findLatestComment(Long postId) {
+    public Comment findLatestComment(Long cardId) {
         return commentRepository.findFirstByCardIdOrderByCreateAtDesc(
-            postId).orElseThrow(
+            cardId).orElseThrow(
             () -> new IllegalArgumentException("댓글을 찾을 수 없습니다.")
         );
     }
