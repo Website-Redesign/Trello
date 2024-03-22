@@ -7,8 +7,12 @@ import com.example.trello.domain.user.entity.QUser;
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.worker.entity.QWorker;
 import com.example.trello.domain.worker.entity.Worker;
+import com.fasterxml.jackson.annotation.OptBoolean;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.Objects;
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +50,20 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 		return Optional.ofNullable(query);
 	}
 
+	@Override
+	public Boolean getDeadLine(Long cardId) {
+		LocalDateTime query = jpaQueryFactory.select(QCard.card.deadLine)
+			.from(QCard.card)
+			.where(
+				cardIdEq(cardId)
+			).fetchOne();
+		if(query==null){
+			return false;
+		}
+		Date deadLine = Date.from(query.atZone(ZoneId.systemDefault()).toInstant());
+		return !new Date().before(deadLine);
+	}
+
 
 	public Optional<Long> getColumnId(Long cardId) {
 		Long query = jpaQueryFactory.select(QCard.card.columnId)
@@ -57,6 +75,7 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 			.fetchOne();
 		return Optional.ofNullable(query);
 	}
+
 
 	public Optional<Long> getBoardId(Long columnId) {
 		Long query = jpaQueryFactory.select(QColumn.column.boardId)

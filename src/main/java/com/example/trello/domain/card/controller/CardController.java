@@ -1,5 +1,6 @@
 package com.example.trello.domain.card.controller;
 
+import com.example.trello.domain.card.dto.CardDeadLineRequestDto;
 import com.example.trello.domain.card.dto.CardRequestDto;
 import com.example.trello.domain.card.dto.CardResponseDto;
 import com.example.trello.domain.card.repository.CardRepositoryCustom;
@@ -40,6 +41,15 @@ public class CardController {
 		@PathVariable Long cardsId,@AuthenticationPrincipal UserDetailsImpl userDetails,
 		@RequestBody CardRequestDto requestDto){
 		cardService.updateCard(cardsId,userDetails.getUser().getId(), requestDto);
+		return ResponseEntity.ok()
+			.body(CommonResponseDto.<Void>builder().build());
+	}
+
+	@PatchMapping("/columns/cards/{cardsId}/deadLine")
+	public ResponseEntity<CommonResponseDto<Void>> updateCardDeadLine(
+		@PathVariable Long cardsId,@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestBody CardDeadLineRequestDto requestDto){
+		cardService.updateCardDeadLine(cardsId,userDetails.getUser().getId(), requestDto);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
 	}

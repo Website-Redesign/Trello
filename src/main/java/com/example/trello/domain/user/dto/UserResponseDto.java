@@ -1,11 +1,15 @@
 package com.example.trello.domain.user.dto;
 
 import com.example.trello.domain.user.entity.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserResponseDto {
 
 	private Long userId;
