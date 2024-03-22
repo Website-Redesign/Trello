@@ -31,7 +31,7 @@ public class UserController {
 
 	@PostMapping("/users/signup")
 	public ResponseEntity<CommonResponseDto<Void>> signup(
-		@Valid @RequestBody SignupRequestDto requestDto){
+		@Valid @RequestBody SignupRequestDto requestDto) {
 		userService.signup(requestDto);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
@@ -39,7 +39,8 @@ public class UserController {
 
 	@PatchMapping("/users")
 	public ResponseEntity<CommonResponseDto<Void>> updateUser(
-		@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody UserInfoRequestDto requestDto){
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestBody UserInfoRequestDto requestDto) {
 		userService.updateUser(userDetails.getUser().getId(), requestDto);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
@@ -47,7 +48,8 @@ public class UserController {
 
 	@PatchMapping("/users/change-password")
 	public ResponseEntity<CommonResponseDto<Void>> changePassword(
-		@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody ChangePasswordRequestDto requestDto){
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestBody ChangePasswordRequestDto requestDto) {
 		userService.changePassword(userDetails.getUser().getId(), requestDto);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
@@ -55,13 +57,9 @@ public class UserController {
 
 	@DeleteMapping("/users")
 	public ResponseEntity<CommonResponseDto<Void>> deleteUser(
-		@AuthenticationPrincipal UserDetailsImpl userDetails,@RequestBody UserDeleteRequestDto requestDto,
-		HttpServletRequest req){
-		String bearerToken = req.getHeader("Authorization");
-		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-			bearerToken = bearerToken.substring(7);
-		}
-		userService.deleteUser(userDetails.getUser().getId(),requestDto,bearerToken);
+		@AuthenticationPrincipal UserDetailsImpl userDetails,
+		@RequestBody UserDeleteRequestDto requestDto) {
+		userService.deleteUser(userDetails.getUser().getId(), requestDto);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
 	}
@@ -69,19 +67,19 @@ public class UserController {
 	@GetMapping("/users/logout")
 	public ResponseEntity<CommonResponseDto<Void>> logout(
 		@AuthenticationPrincipal UserDetailsImpl userDetails,
-		HttpServletRequest req){
+		HttpServletRequest req) {
 		String bearerToken = req.getHeader("Authorization");
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			bearerToken = bearerToken.substring(7);
 		}
-		userService.logout(userDetails.getUser().getId(),bearerToken);
+		userService.logout(userDetails.getUser().getId(), bearerToken);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Void>builder().build());
 	}
 
 	@GetMapping("/users/my-page")
 	public ResponseEntity<CommonResponseDto<UserResponseDto>> myInfo(
-		@AuthenticationPrincipal UserDetailsImpl userDetails){
+		@AuthenticationPrincipal UserDetailsImpl userDetails) {
 		UserResponseDto responseDto = userService.getUser(userDetails.getUser().getId());
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<UserResponseDto>builder()
@@ -91,7 +89,7 @@ public class UserController {
 
 	@GetMapping("/users/{userId}")
 	public ResponseEntity<CommonResponseDto<UserResponseDto>> getUser(
-		@PathVariable Long userId){
+		@PathVariable Long userId) {
 		UserResponseDto responseDto = userService.getUser(userId);
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<UserResponseDto>builder()
@@ -100,7 +98,7 @@ public class UserController {
 	}
 
 	@GetMapping("/users")
-	public ResponseEntity<CommonResponseDto<Page<UserResponseDto>>> getAllUsers(){
+	public ResponseEntity<CommonResponseDto<Page<UserResponseDto>>> getAllUsers() {
 		Page<UserResponseDto> responseDto = userService.getAllUsers();
 		return ResponseEntity.ok()
 			.body(CommonResponseDto.<Page<UserResponseDto>>builder()

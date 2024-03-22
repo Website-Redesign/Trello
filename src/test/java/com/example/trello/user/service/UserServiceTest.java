@@ -25,6 +25,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
+
 	@Mock
 	UserRepository userRepository;
 
@@ -36,13 +37,13 @@ public class UserServiceTest {
 
 	private Pageable pageable = PageRequest.of(0, 10);
 
-	private User testUser(){
-		return new User(1L,"test@gmail.com","12345678","닉네임","설명","사진url", UserRoleEnum.USER);
+	private User testUser() {
+		return new User(1L, "test@gmail.com", "12345678", "닉네임", "설명", "사진url", UserRoleEnum.USER);
 	}
 
 	@Test
 	@DisplayName("유저 회원가입 테스트")
-	void signupTest(){
+	void signupTest() {
 		//given
 		SignupRequestDto requestDto = new SignupRequestDto();
 		requestDto.setEmail("test@gmail.com");
@@ -50,15 +51,17 @@ public class UserServiceTest {
 		requestDto.setNickname("닉네임");
 		requestDto.setIntroduction("설명");
 		requestDto.setPhoto("사진url");
-		when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(Optional.ofNullable(null));
-		when(userRepository.findByNickname(requestDto.getNickname())).thenReturn(Optional.ofNullable(null));
+		when(userRepository.findByEmail(requestDto.getEmail())).thenReturn(
+			Optional.ofNullable(null));
+		when(userRepository.findByNickname(requestDto.getNickname())).thenReturn(
+			Optional.ofNullable(null));
 		//when - then
 		userService.signup(requestDto);
 	}
 
 	@Test
 	@DisplayName("유저 정보갱신 테스트")
-	void updateUserTest(){
+	void updateUserTest() {
 		//given
 		UserInfoRequestDto requestDto = new UserInfoRequestDto();
 		requestDto.setNickname("테스터");
@@ -66,49 +69,53 @@ public class UserServiceTest {
 		requestDto.setPhoto("새로운 사진");
 		User user = testUser();
 		when(userRepository.findByMyId(user.getId())).thenReturn(Optional.of(user));
-		when(userRepository.findByNickname(requestDto.getNickname())).thenReturn(Optional.ofNullable(null));
+		when(userRepository.findByNickname(requestDto.getNickname())).thenReturn(
+			Optional.ofNullable(null));
 		//when - then
-		userService.updateUser(testUser().getId(),requestDto);
+		userService.updateUser(testUser().getId(), requestDto);
 	}
 
 	@Test
 	@DisplayName("비밀번호 변경 테스트")
-	void changePasswordTest(){
+	void changePasswordTest() {
 		//given
 		ChangePasswordRequestDto requestDto = new ChangePasswordRequestDto();
 		requestDto.setExistingPassword("12345678");
 		requestDto.setNewPassword("test123456");
 		User user = testUser();
-		when(passwordEncoder.matches(requestDto.getExistingPassword(),testUser().getPassword())).thenReturn(true);
+		when(passwordEncoder.matches(requestDto.getExistingPassword(),
+			testUser().getPassword())).thenReturn(true);
 		when(userRepository.findByMyId(user.getId())).thenReturn(Optional.of(user));
 		//when - then
-		userService.changePassword(testUser().getId(),requestDto);
+		userService.changePassword(testUser().getId(), requestDto);
 	}
 
 	@Test
 	@DisplayName("유저 삭제 테스트")
-	void deleteUserTest(){
+	void deleteUserTest() {
 		//given
 		UserDeleteRequestDto requestDto = new UserDeleteRequestDto();
 		requestDto.setPassword("12345678");
 		User user = testUser();
-		when(passwordEncoder.matches(requestDto.getPassword(),testUser().getPassword())).thenReturn(true);
+		when(
+			passwordEncoder.matches(requestDto.getPassword(), testUser().getPassword())).thenReturn(
+			true);
 		when(userRepository.findByMyId(user.getId())).thenReturn(Optional.of(user));
 		//when - then
-		userService.deleteUser(user.getId(),requestDto,"token");
+		userService.deleteUser(user.getId(),requestDto);
 	}
 
 	@Test
 	@DisplayName("특정 유저 검색 테스트")
-	void getUserTest(){
+	void getUserTest() {
 		//given
 		User user = testUser();
 		when(userRepository.findByMyId(user.getId())).thenReturn(Optional.of(user));
 		//when
 		UserResponseDto responseDto = userService.getUser(user.getId());
 		//then
-		assertEquals(responseDto.getUserId(),user.getId());
-		assertEquals(responseDto.getNickname(),user.getNickname());
+		assertEquals(responseDto.getUserId(), user.getId());
+		assertEquals(responseDto.getNickname(), user.getNickname());
 	}
 
 }

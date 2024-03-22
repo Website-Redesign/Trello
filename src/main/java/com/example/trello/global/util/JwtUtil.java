@@ -65,7 +65,7 @@ public class JwtUtil {
 			Jwts.builder()
 				.claim("userId", userId)
 				.claim("email", email)
-				.claim("role",UserRoleEnum.USER.toString())
+				.claim("role", UserRoleEnum.USER.toString())
 				.setIssuedAt(new Date(date.getTime())) // 토큰 발행 시간 정보
 				.setExpiration(new Date(date.getTime() + REFRESHTOKENTIME)) // set Expire Time
 				.signWith(key, signatureAlgorithm)  // 사용할 암호화 알고리즘과
@@ -114,22 +114,14 @@ public class JwtUtil {
 	}
 
 	public String validateRefreshToken(Long userId) {
-		try {
-			RefreshToken token = refreshTokenRepository.findByUserId(userId).orElseThrow(
-				() -> new IllegalArgumentException("RefreshToken 이 유효하지 않습니다.")
-			);
-			String refreshToken = token.getRefreshToken().substring(7);
-			// 검증
-			Claims info = Jwts.parserBuilder().setSigningKey(key).build()
-				.parseClaimsJws(refreshToken).getBody();
-			if (!info.getExpiration().before(new Date())) {
-				return recreationAccessToken(info.get("userId", Long.class),
-					info.get("email", String.class));
-			}
-		} catch (Exception e) {
-			return null;
-		}
-		return null;
+		RefreshToken token = refreshTokenRepository.findByUserId(userId).orElseThrow(
+			() -> new IllegalArgumentException("RefreshToken 이 유효하지 않습니다.")
+		);
+		String refreshToken = token.getRefreshToken().substring(7);
+		Claims info = Jwts.parserBuilder().setSigningKey(key).build()
+			.parseClaimsJws(refreshToken).getBody();
+		return recreationAccessToken(info.get("userId", Long.class),
+			info.get("email", String.class));
 	}
 
 	public String recreationAccessToken(Long userId, String email) {

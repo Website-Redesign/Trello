@@ -9,7 +9,12 @@ import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.repository.UserRepository;
 import com.example.trello.global.util.JwtUtil;
 import com.example.trello.global.util.RedisUtil;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,6 +33,9 @@ public class UserService {
 	private final JwtUtil jwtUtil;
 
 	private final RedisUtil redisUtil;
+
+	private final CacheManager cacheManager;
+
 
 	public void signup(SignupRequestDto requestDto) {
 		if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
@@ -53,6 +61,8 @@ public class UserService {
 		}
 		user.update(requestDto);
 		userRepository.update(user);
+		UserResponseDto responseDto = new UserResponseDto(user);
+		Objects.requireNonNull(cacheManager.getCache("User")).put(userId,responseDto);
 	}
 
 	public void changePassword(Long userId, ChangePasswordRequestDto requestDto) {
@@ -67,7 +77,7 @@ public class UserService {
 		userRepository.update(user);
 	}
 
-	public void deleteUser(Long userId, UserDeleteRequestDto requestDto, String token) {
+	public void deleteUser(Long userId, UserDeleteRequestDto requestDto) {
 		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
@@ -75,21 +85,19 @@ public class UserService {
 			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
 		}
 		user.delete();
-		//redis 비워주기
-		//do 필터에서 파라마티로 url에 들어감 특정 url로 들어오면 접근 불가 가능
 	}
 
 	public void logout(Long userId, String token) {
-		String tokenSet = token.substring(7);
-		if (!jwtUtil.validateToken(tokenSet)) {
+		if (!jwtUtil.validateToken(token)) {
 			throw new IllegalArgumentException("이미 로그아웃 되어 있습니다.");
 		}
 		jwtUtil.deleteRefreshToken(userId);
-		Long expiration = jwtUtil.getExpiration(tokenSet);
-		redisUtil.setBlackList(tokenSet, "access_token", expiration);
+		Long expiration = jwtUtil.getExpiration(token);
+		redisUtil.setBlackList(token, userId, expiration);
 	}
 
 	@Transactional(readOnly = true)
+	@Cacheable(value = "User", key = "#userId", cacheManager = "cacheManager", unless = "#result == null") // 리턴 값 따라간다
 	public UserResponseDto getUser(Long userId) {
 		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
