@@ -28,7 +28,7 @@ public class Column extends TimeStamp {
 
     public Column(ColumnRequestDto requestDto) {
         this.column_name = requestDto.getColumn_name();
-        this.boardId = requestDto.getBoard_id();
+        this.boardId = requestDto.getBoardId();
     }
 
     public void setColumnName(String columnName) {
@@ -39,4 +39,12 @@ public class Column extends TimeStamp {
         this.boardId = boardId;
     }
 
+    public void setColumnId(Long columnId) {
+        this.id = columnId;
+    }
+
+    public Long getColumnId() {
+        return id;
+    }
 }
+

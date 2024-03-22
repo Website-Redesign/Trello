@@ -1,23 +1,28 @@
 package com.example.trello.domain.column.dto;
 
 import com.example.trello.domain.column.entity.Column;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import com.example.trello.global.util.TimeStamp;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Builder
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
-public class ColumnResponseDto {
+@NoArgsConstructor
+public class ColumnResponseDto extends TimeStamp {
     private Long id;
     private String column_name;
     private Long boardId;
 
     public ColumnResponseDto(Column column) {
-        this.id = column.getId();
         this.column_name = column.getColumn_name();
         this.boardId = column.getBoardId();
+    }
+
+    public Long getColumnId() {
+        return id;
     }
 }

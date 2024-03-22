@@ -4,6 +4,13 @@ import com.example.trello.domain.column.entity.Column;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.Optional;
+
 public interface ColumnRepositoryCustom {
-    Page<Column> findByColumnId(Long boardId, Pageable pageable);
+
+    Optional<Column> findColumnByIdAndBoardIdAndUserId(Long columnId, Long boardId);
+
+    Page<Column> findColumnsByBoardIdAndUserId(Long boardId, Pageable pageable);
+
+    boolean deleteColumnByIdAndBoardIdAndUserId(Long columnId, Long boardId);
 }

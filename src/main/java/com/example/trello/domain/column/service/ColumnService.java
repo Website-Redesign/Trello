@@ -7,6 +7,7 @@ import com.example.trello.domain.column.repository.ColumnRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,30 +18,39 @@ public class ColumnService {
     private final ColumnRepository columnRepository;
 
     @Transactional
-    public void createColumn(Long boardId, Long userId, ColumnRequestDto columnRequestDto) {
-        Column column = new Column(columnRequestDto);
+    public ColumnResponseDto createColumn(Long boardId, ColumnRequestDto requestDto) {
+        Column column = new Column();
+        column.setColumnName(requestDto.getColumn_name());
         column.setBoardId(boardId);
-        columnRepository.save(column);
+        Column savedColumn = columnRepository.save(column);
+        return new ColumnResponseDto(savedColumn);
     }
 
     @Transactional(readOnly = true)
-    public ColumnResponseDto getColumns(Long boardId, Long columnId, Long userId, int page, int size) {
-        Column column = columnRepository.findById(columnId)
-                .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 컬럼을 찾을 수 없습니다:" + columnId));
-        Page<Column> columnPage = columnRepository.findColumnsByBoardId(boardId, PageRequest.of(page - 1, size));
-        return new ColumnResponseDto((Column) columnPage.getContent());
+    public ColumnResponseDto getColumn(Long boardId, Long columnId, int page, int size) {
+        Column column = existsByColumnIdAndUserIdAndBoardId(columnId, boardId);
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Column> columnPage = columnRepository.findColumnsByBoardIdAndUserId(boardId, pageable);
+        columnPage.map(ColumnResponseDto::new);
+        return new ColumnResponseDto(column);
+    }
+
+
+    @Transactional
+    public ColumnResponseDto updateColumnName(Long boardId, Long columnId, ColumnRequestDto requestDto) {
+        Column column = existsByColumnIdAndUserIdAndBoardId(columnId, boardId);
+        column.setColumnName(requestDto.getColumn_name());
+        Column updatedColumn = columnRepository.save(column);
+        return new ColumnResponseDto(updatedColumn);
     }
 
     @Transactional
-    public void updateColumnName(Long boardId, Long columnId, Long userId, ColumnRequestDto columnRequestDto) {
-        Column column = columnRepository.findById(columnId)
-                .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 컬럼을 찾을 수 없습니다:" + columnId));
-        column.setColumnName(columnRequestDto.getColumn_name());
-        columnRepository.save(column);
+    public void deleteColumn(Long boardId, Long columnId) {
+        columnRepository.deleteColumnByIdAndBoardIdAndUserId(columnId, boardId);
     }
 
-    @Transactional
-    public void deleteColumns(Long boardId, Long userId, Long columnId) {
-        columnRepository.deleteById(columnId);
+    private Column existsByColumnIdAndUserIdAndBoardId(Long columnId, Long boardId) {
+        return (Column) columnRepository.findColumnByIdAndBoardIdAndUserId(columnId, boardId)
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 컬럼을 찾을 수 없습니다"));
     }
 }
