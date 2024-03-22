@@ -26,7 +26,7 @@ dependencies {
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.redisson:redisson-spring-boot-starter:3.27.1'
+//    implementation 'org.redisson:redisson-spring-boot-starter:3.27.1'
 
 // JUNIT 테스트를 위한 기본 의존성
 //    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.2'
