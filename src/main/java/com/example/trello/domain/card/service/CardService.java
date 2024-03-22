@@ -5,6 +5,7 @@ import com.example.trello.domain.card.dto.CardRequestDto;
 import com.example.trello.domain.card.dto.CardResponseDto;
 import com.example.trello.domain.card.entity.Card;
 import com.example.trello.domain.card.repository.CardRepository;
+import java.time.ZoneId;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,9 @@ public class CardService {
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
 			() -> new IllegalArgumentException("권한이 없습니다..")
 		);
-		if(new Date().before(requestDto.getDeadTime())){
+		Date date = new Date();
+		Date deadLine = Date.from(requestDto.getDeadLine().atZone(ZoneId.systemDefault()).toInstant());
+		if(date.after(deadLine)){
 			throw new IllegalArgumentException("잘못된 deadLine 설정 입니다.");
 		}
 		card.deadLineUpdate(requestDto);

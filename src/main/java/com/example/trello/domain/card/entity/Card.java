@@ -44,7 +44,7 @@ public class Card extends TimeStamp {
 	@Column
 	@JsonSerialize(using = LocalDateTimeSerializer.class)
 	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
-	private Date deadLine;
+	private LocalDateTime deadLine;
 
 	public Card(Long columnId, CardRequestDto requestDto) {
 		this.cardname = requestDto.getCardname();
@@ -60,6 +60,6 @@ public class Card extends TimeStamp {
 	}
 
 	public void deadLineUpdate(CardDeadLineRequestDto requestDto){
-		deadLine = requestDto.getDeadTime();
+		deadLine = requestDto.getDeadLine();
 	}
 }

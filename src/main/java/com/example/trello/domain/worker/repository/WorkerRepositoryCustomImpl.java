@@ -10,6 +10,8 @@ import com.example.trello.domain.worker.entity.Worker;
 import com.fasterxml.jackson.annotation.OptBoolean;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
 import java.util.List;
@@ -50,15 +52,16 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 
 	@Override
 	public Boolean getDeadLine(Long cardId) {
-		Date query = jpaQueryFactory.select(QCard.card.deadLine)
+		LocalDateTime query = jpaQueryFactory.select(QCard.card.deadLine)
 			.from(QCard.card)
 			.where(
 				cardIdEq(cardId)
 			).fetchOne();
-		if(query==null||new Date().before(query)){
+		if(query==null){
 			return false;
 		}
-		return true;
+		Date deadLine = Date.from(query.atZone(ZoneId.systemDefault()).toInstant());
+		return !new Date().before(deadLine);
 	}
 
 
