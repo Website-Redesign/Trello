@@ -24,6 +24,9 @@ public class WorkerService {
         if (workerRepository.findByCardIdAndUserId(cardId, userId).isPresent()) {
             throw new IllegalArgumentException("이미 등록된 유저 입니다.");
         }
+		if(workerRepository.getDeadLine(cardId)){
+			throw new IllegalArgumentException("deadLine 이 지나 등록되지 않았습니다.");
+		}
         Worker worker = new Worker(cardId, userId);
         workerRepository.save(worker);
     }
