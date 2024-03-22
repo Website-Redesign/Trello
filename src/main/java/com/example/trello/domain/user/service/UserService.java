@@ -10,7 +10,6 @@ import com.example.trello.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,28 +18,28 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserService {
 
-	private final UserRepository userRepository;
+    private final UserRepository userRepository;
 
-	private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-	@Transactional
-	public void signup(SignupRequestDto requestDto) {
-		if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
-			throw new IllegalArgumentException("중복된 이름을 가진 회원이 있습니다.");
-		}
-		if (userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
-			throw new IllegalArgumentException("중복된 닉네임을 가진 회원이 있습니다.");
-		}
-		String password = passwordEncoder.encode(requestDto.getPassword());
-		requestDto.setPassword(password);
+    @Transactional
+    public void signup(SignupRequestDto requestDto) {
+        if (userRepository.findByEmail(requestDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("중복된 이름을 가진 회원이 있습니다.");
+        }
+        if (userRepository.findByNickname(requestDto.getNickname()).isPresent()) {
+            throw new IllegalArgumentException("중복된 닉네임을 가진 회원이 있습니다.");
+        }
+        String password = passwordEncoder.encode(requestDto.getPassword());
+        requestDto.setPassword(password);
 
-		User user = new User(requestDto);
-		userRepository.save(user);
-	}
+        User user = new User(requestDto);
+        userRepository.save(user);
+    }
 
 	@Transactional
 	public void updateUser(Long userId, UserInfoRequestDto requestDto) {
-		User user = userRepository.findById(userId).orElseThrow(
+		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
 		if (userRepository.findByNickname(requestDto.getNickname()).isPresent()&&!user.getNickname().equals(requestDto.getNickname())) {
@@ -52,10 +51,10 @@ public class UserService {
 
 	@Transactional
 	public void changePassword(Long userId, ChangePasswordRequestDto requestDto) {
-		User user = userRepository.findById(userId).orElseThrow(
+		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
-		if (!passwordEncoder.matches(user.getPassword(), requestDto.getExistingPassword())) {
+		if (!passwordEncoder.matches(requestDto.getExistingPassword(),user.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
 		}
 		String password = passwordEncoder.encode(requestDto.getNewPassword());
@@ -65,26 +64,31 @@ public class UserService {
 
 	@Transactional
 	public void deleteUser(Long userId, UserDeleteRequestDto requestDto) {
-		User user = userRepository.findById(userId).orElseThrow(
+		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
-		if (!passwordEncoder.matches(user.getPassword(), requestDto.getPassword())) {
+		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
 			throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
 		}
-		userRepository.delete(user);
+		user.delete();
+		//로그아웃 로직 추가
 	}
 
 	public UserResponseDto getUser(Long userId) {
-		User user = userRepository.findById(userId).orElseThrow(
+		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")
 		);
 		return new UserResponseDto(user);
 	}
 
-	public Page<UserResponseDto> getAllUsers() {
-		return userRepository.findAllUser(PageRequest.of(0, 10)).orElseThrow(
-			() -> new IllegalArgumentException("현재 가입된 유저가 없습니다.")
-		);
-	}
+    public Page<UserResponseDto> getAllUsers() {
+        return userRepository.findAllUser(PageRequest.of(0, 10)).orElseThrow(
+            () -> new IllegalArgumentException("현재 가입된 유저가 없습니다.")
+        );
+    }
 
+    public String findNickname(Long userId) {
+        return userRepository.findNicknameById(userId)
+            .orElseThrow(() -> new IllegalArgumentException("유저의 Nickname 이 존재하지 않습니다."));
+    }
 }

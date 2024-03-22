@@ -65,7 +65,7 @@ public class UserServiceTest {
 		requestDto.setIntroduction("새로운설명");
 		requestDto.setPhoto("새로운 사진");
 		User user = testUser();
-		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+		when(userRepository.findByMyId(user.getId())).thenReturn(Optional.of(user));
 		when(userRepository.findByNickname(requestDto.getNickname())).thenReturn(Optional.ofNullable(null));
 		//when - then
 		userService.updateUser(testUser().getId(),requestDto);
@@ -80,7 +80,7 @@ public class UserServiceTest {
 		requestDto.setNewPassword("test123456");
 		User user = testUser();
 		when(passwordEncoder.matches(requestDto.getExistingPassword(),testUser().getPassword())).thenReturn(true);
-		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+		when(userRepository.findByMyId(user.getId())).thenReturn(Optional.of(user));
 		//when - then
 		userService.changePassword(testUser().getId(),requestDto);
 	}
@@ -93,7 +93,7 @@ public class UserServiceTest {
 		requestDto.setPassword("12345678");
 		User user = testUser();
 		when(passwordEncoder.matches(requestDto.getPassword(),testUser().getPassword())).thenReturn(true);
-		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+		when(userRepository.findByMyId(user.getId())).thenReturn(Optional.of(user));
 		//when - then
 		userService.deleteUser(user.getId(),requestDto);
 	}
@@ -103,7 +103,7 @@ public class UserServiceTest {
 	void getUserTest(){
 		//given
 		User user = testUser();
-		when(userRepository.findById(user.getId())).thenReturn(Optional.of(user));
+		when(userRepository.findByMyId(user.getId())).thenReturn(Optional.of(user));
 		//when
 		UserResponseDto responseDto = userService.getUser(user.getId());
 		//then

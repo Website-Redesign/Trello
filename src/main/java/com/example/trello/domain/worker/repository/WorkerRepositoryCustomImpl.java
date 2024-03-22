@@ -26,8 +26,9 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 		Worker query = jpaQueryFactory.select(QWorker.worker)
 			.from(QWorker.worker)
 			.where(
-				QWorker.worker.card_id.eq(cardId),
-				QWorker.worker.user_id.eq(userId)
+				QWorker.worker.cardId.eq(cardId),
+				QWorker.worker.userId.eq(userId),
+				QWorker.worker.deletedAt.isNull()
 			)
 			.fetchOne();
 		return Optional.ofNullable(query);
@@ -39,7 +40,8 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 			.from(QTeam.team)
 			.where(
 				userIdEq(userId),
-				boardIdEq(boardId)
+				boardIdEq(boardId),
+				QTeam.team.deletedAt.isNull()
 			).fetchOne();
 		return Optional.ofNullable(query);
 	}
@@ -49,7 +51,8 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 		Long query = jpaQueryFactory.select(QCard.card.columnId)
 			.from(QCard.card)
 			.where(
-				cardIdEq(cardId)
+				cardIdEq(cardId),
+				QCard.card.deletedAt.isNull()
 			)
 			.fetchOne();
 		return Optional.ofNullable(query);
@@ -59,7 +62,8 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 		Long query = jpaQueryFactory.select(QColumn.column.boardId)
 			.from(QColumn.column)
 			.where(
-				columnIdEq(columnId)
+				columnIdEq(columnId),
+				QColumn.column.deletedAt.isNull()
 			)
 			.fetchOne();
 		return Optional.ofNullable(query);
@@ -78,9 +82,12 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 	public List<Long> findByCardId(Long cardId) {
 		QWorker worker = QWorker.worker;
 
-		return jpaQueryFactory.select(worker.user_id)
+		return jpaQueryFactory.select(worker.userId)
 			.from(worker)
-			.where(worker.card_id.eq(cardId))
+			.where(
+				worker.cardId.eq(cardId),
+				worker.deletedAt.isNull()
+			)
 			.fetch();
 	}
 

@@ -25,7 +25,7 @@ public class CardService {
 
 	@Transactional
 	public void updateCard(Long cardId, Long userId, CardRequestDto requestDto) {
-		Card card = cardRepository.findById(cardId).orElseThrow(
+		Card card = cardRepository.findByMyId(cardId).orElseThrow(
 			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
 		);
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
@@ -37,22 +37,28 @@ public class CardService {
 
 	@Transactional
 	public void deleteCard(Long cardId, Long userId) {
-		Card card = cardRepository.findById(cardId).orElseThrow(
+		Card card = cardRepository.findByMyId(cardId).orElseThrow(
 			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
 		);
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
 			() -> new IllegalArgumentException("권한이 없습니다..")
 		);
-		cardRepository.delete(card);
+		card.delete();
 	}
 
 	public CardResponseDto getCard(Long cardId, Long userId) {
-		Card card = cardRepository.findById(cardId).orElseThrow(
+		Card card = cardRepository.findByMyId(cardId).orElseThrow(
 			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
 		);
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
 			() -> new IllegalArgumentException("권한이 없습니다..")
 		);
 		return cardRepository.getFindCard(cardId);
+	}
+
+	public Card findCard(Long cardId) {
+		return cardRepository.findById(cardId).orElseThrow(
+			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+		);
 	}
 }
