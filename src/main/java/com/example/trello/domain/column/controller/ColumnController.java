@@ -20,9 +20,8 @@ public class ColumnController {
     @PostMapping
     public ResponseEntity<ColumnResponseDto> createColumn(
             @PathVariable Long boardId,
-            @RequestBody ColumnRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ColumnResponseDto responseDto = columnService.createColumn(boardId, requestDto, userDetails.getUser().getId());
+            @RequestBody ColumnRequestDto requestDto) {
+        ColumnResponseDto responseDto = columnService.createColumn(boardId, requestDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
@@ -31,9 +30,8 @@ public class ColumnController {
             @PathVariable Long boardId,
             @PathVariable Long columnId,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ColumnResponseDto responseDto = columnService.getColumn(boardId, columnId, page, size, userDetails.getUser().getId());
+            @RequestParam(defaultValue = "10") int size) {
+        ColumnResponseDto responseDto = columnService.getColumn(boardId, columnId, page, size);
         return ResponseEntity.ok(responseDto);
     }
 
@@ -41,18 +39,16 @@ public class ColumnController {
     public ResponseEntity<ColumnResponseDto> updateColumnName(
             @PathVariable Long boardId,
             @PathVariable Long columnId,
-            @RequestBody ColumnRequestDto requestDto,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        ColumnResponseDto responseDto = columnService.updateColumnName(boardId, columnId, requestDto, userDetails.getUser().getId());
+            @RequestBody ColumnRequestDto requestDto) {
+        ColumnResponseDto responseDto = columnService.updateColumnName(boardId, columnId, requestDto);
         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{columnId}")
     public ResponseEntity<Void> deleteColumn(
             @PathVariable Long boardId,
-            @PathVariable Long columnId,
-            @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        columnService.deleteColumn(boardId, columnId, userDetails.getUser().getId());
+            @PathVariable Long columnId) {
+        columnService.deleteColumn(boardId, columnId);
         return ResponseEntity.ok().build();
     }
 }

@@ -18,7 +18,7 @@ public class ColumnService {
     private final ColumnRepository columnRepository;
 
     @Transactional
-    public ColumnResponseDto createColumn(Long boardId, ColumnRequestDto requestDto, Long userId) {
+    public ColumnResponseDto createColumn(Long boardId, ColumnRequestDto requestDto) {
         Column column = new Column();
         column.setColumnName(requestDto.getColumn_name());
         column.setBoardId(boardId);
@@ -27,7 +27,7 @@ public class ColumnService {
     }
 
     @Transactional(readOnly = true)
-    public ColumnResponseDto getColumn(Long boardId, Long columnId, int page, int size, Long userId) {
+    public ColumnResponseDto getColumn(Long boardId, Long columnId, int page, int size) {
         Column column = existsByColumnIdAndUserIdAndBoardId(columnId, boardId);
         Pageable pageable = PageRequest.of(page, size);
         Page<Column> columnPage = columnRepository.findColumnsByBoardIdAndUserId(boardId, pageable);
@@ -37,7 +37,7 @@ public class ColumnService {
 
 
     @Transactional
-    public ColumnResponseDto updateColumnName(Long boardId, Long columnId, ColumnRequestDto requestDto, Long userId) {
+    public ColumnResponseDto updateColumnName(Long boardId, Long columnId, ColumnRequestDto requestDto) {
         Column column = existsByColumnIdAndUserIdAndBoardId(columnId, boardId);
         column.setColumnName(requestDto.getColumn_name());
         Column updatedColumn = columnRepository.save(column);
@@ -45,7 +45,7 @@ public class ColumnService {
     }
 
     @Transactional
-    public void deleteColumn(Long boardId, Long columnId, Long userId) {
+    public void deleteColumn(Long boardId, Long columnId) {
         columnRepository.deleteColumnByIdAndBoardIdAndUserId(columnId, boardId);
     }
 
