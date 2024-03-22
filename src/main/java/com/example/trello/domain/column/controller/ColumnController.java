@@ -20,7 +20,7 @@ public class ColumnController {
             @PathVariable Long boardId,
             @RequestBody ColumnRequestDto requestDto) {
         ColumnResponseDto responseDto = columnService.createColumn(boardId, requestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @GetMapping("/{columnId}")
@@ -47,6 +47,6 @@ public class ColumnController {
             @PathVariable Long boardId,
             @PathVariable Long columnId) {
         columnService.deleteColumn(boardId, columnId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }
