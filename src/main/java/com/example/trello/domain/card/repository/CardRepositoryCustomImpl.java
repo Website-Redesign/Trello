@@ -74,7 +74,7 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 	}
 
 	private BooleanExpression columnIdEq(Long columnId) {
-		return Objects.nonNull(columnId) ? QColumn.column.id.eq(columnId) : null;
+		return Objects.nonNull(columnId) ? QColumn.column.columnId.eq(columnId) : null;
 	}
 
 	private BooleanExpression userIdEq(Long userId) {
