@@ -46,9 +46,9 @@ public class CardService {
 		Card card = cardRepository.findByMyId(cardId).orElseThrow(
 			() -> new NoEntityException(messageSource.getMessage("no.card", null, Locale.KOREA))
 		);
-//		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
-//			() -> new NoPermissionException(messageSource.getMessage("no.permission", null, Locale.KOREA))
-//		);
+		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
+			() -> new NoPermissionException(messageSource.getMessage("no.permission", null, Locale.KOREA))
+		);
 		RLock lock = redissonClient.getLock("card_" + cardId);
 		lock.lock();
 		card.update(requestDto);
