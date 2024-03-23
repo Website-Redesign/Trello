@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +43,7 @@ public class ColumnService {
         column.setColumnName(requestDto.getColumnName());
         Column updatedColumn = columnRepository.save(column);
 
-        cacheManager.getCache("column").put(columnId, new ColumnResponseDto(updatedColumn));
+        Objects.requireNonNull(cacheManager.getCache("column")).put(columnId, new ColumnResponseDto(updatedColumn));
 
         return new ColumnResponseDto(updatedColumn);
     }
