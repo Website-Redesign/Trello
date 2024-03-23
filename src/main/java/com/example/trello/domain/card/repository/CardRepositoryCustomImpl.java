@@ -26,23 +26,6 @@ public class CardRepositoryCustomImpl implements CardRepositoryCustom {
 	private final EntityManager entityManager;
 
 	@Override
-	public CardResponseDto getFindCard(Long cardId) {
-		Card card = findByMyId(cardId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카드 입니다."));
-		List<String> works_names = jpaQueryFactory.select(QUser.user.nickname)
-			.from(QUser.user)
-			.innerJoin(QWorker.worker).on(QUser.user.id.eq(QWorker.worker.userId))
-			.where(
-				QWorker.worker.cardId.eq(cardId),
-				QWorker.worker.deletedAt.isNull(),
-				QUser.user.deletedAt.isNull()
-			).fetch()
-			.stream()
-			.toList();
-		return new CardResponseDto(card, works_names);
-	}
-
-	@Override
 	public Optional<User> existsByUserIdAndColumnIdInTeam(Long userId, Long columnId) {
 		Long boardId = getBoardId(columnId).orElseThrow(
 			() -> new IllegalArgumentException("해당 하는 Id의 보드가 없습니다.")

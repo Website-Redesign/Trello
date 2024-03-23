@@ -7,8 +7,6 @@ import java.util.Optional;
 
 public interface CardRepositoryCustom {
 
-	CardResponseDto getFindCard(Long cardId);
-
 	Optional<User> existsByUserIdAndColumnIdInTeam(Long userId,Long columnId);
 
 	Optional<Card> findByMyId(Long cardId);

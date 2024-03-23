@@ -76,6 +76,20 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 		return Optional.ofNullable(query);
 	}
 
+	@Override
+	public List<String> getFindCardId(Long cardId) {
+		return jpaQueryFactory.select(QUser.user.nickname)
+			.from(QUser.user)
+			.innerJoin(QWorker.worker).on(QUser.user.id.eq(QWorker.worker.userId))
+			.where(
+				QWorker.worker.cardId.eq(cardId),
+				QWorker.worker.deletedAt.isNull(),
+				QUser.user.deletedAt.isNull()
+			).fetch()
+			.stream()
+			.toList();
+	}
+
 
 	public Optional<Long> getBoardId(Long columnId) {
 		Long query = jpaQueryFactory.select(QColumn.column.boardId)

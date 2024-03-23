@@ -20,14 +20,12 @@ public class CardResponseDto {
 
 	private LocalDateTime deadLine;
 
-	private List<String> workers;
 
-	public CardResponseDto(Card card, List<String> workers) {
+	public CardResponseDto(Card card) {
 		cardId = card.getId();
 		cardname = card.getCardname();
 		description = card.getDescription();
 		color = card.getColor();
 		deadLine = card.getDeadLine();
-		this.workers = workers;
 	}
 }
