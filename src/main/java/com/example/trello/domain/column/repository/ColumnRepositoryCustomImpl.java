@@ -16,10 +16,11 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
+public abstract class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final QColumn qColumn = QColumn.column;
+
 
     @Override
     public Optional<Column> findColumnByIdAndBoardIdAndUserId(Long columnId, Long boardId) {
@@ -28,8 +29,8 @@ public class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
                         .select(qColumn)
                         .from(qColumn)
                         .where(
-                                qColumn.id.eq(columnId),
-                                qColumn.id.eq(boardId)
+                                qColumn.columnId.eq(columnId),
+                                qColumn.boardId.eq(boardId)
                         )
                         .fetchOne()
         );
@@ -40,7 +41,7 @@ public class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
         JPAQuery<Column> query = jpaQueryFactory
                 .select(qColumn)
                 .from(qColumn)
-                .where(qColumn.id.eq(boardId));
+                .where(qColumn.boardId.eq(boardId));
 
         query = Objects.requireNonNull(pageable).isPaged() ? query.offset(pageable.getOffset()).limit(pageable.getPageSize()) : query;
 
@@ -48,15 +49,16 @@ public class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
         return PageableExecutionUtils.getPage(content, pageable, query::fetchCount);
     }
 
+
     @Override
     public boolean deleteColumnByIdAndBoardIdAndUserId(Long columnId, Long boardId) {
-        jpaQueryFactory
+        long deletedCount = jpaQueryFactory
                 .delete(qColumn)
                 .where(
-                        qColumn.id.eq(columnId),
-                        qColumn.id.eq(boardId)
+                        qColumn.columnId.eq(columnId),
+                        qColumn.boardId.eq(boardId)
                 )
                 .execute();
-        return false;
+        return deletedCount > 0;
     }
 }

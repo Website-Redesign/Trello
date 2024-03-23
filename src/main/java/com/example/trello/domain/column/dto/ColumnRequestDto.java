@@ -8,4 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ColumnRequestDto {
     public String columnName;
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
 }

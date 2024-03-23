@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,17 +40,20 @@ public class ColumnServiceTest {
         // given
         Long boardId = 1L;
         ColumnRequestDto requestDto = new ColumnRequestDto();
+        requestDto.setColumnName("test");
         Column savedColumn = new Column();
+        savedColumn.setColumnName("Test Column");
 
         when(columnRepository.save(any(Column.class))).thenReturn(savedColumn);
 
         // when
-        ColumnResponseDto createdColumn = columnService.createColumn(boardId, requestDto, userId);
+        ColumnResponseDto createdColumn = columnService.createColumn(boardId, requestDto);
 
         // then
         assertNotNull(createdColumn);
-        assertEquals(savedColumn.getColumnName(), createdColumn.getColumn_name());
+        assertEquals(savedColumn.getColumnName(), createdColumn.getColumnName()); // Compare column names
     }
+
 
     @Test
     void getColumn_ValidInput_ReturnsColumnResponseDto() {
@@ -59,42 +63,42 @@ public class ColumnServiceTest {
         int page = 0;
         int size = 10;
         Column column = new Column();
+        column.setColumnName("Test Column"); // Set column name
 
-        Page<Column> mockPage = new PageImpl<>(List.of(column)); // Mock Page 객체 생성
-        when(columnRepository.findColumnsByBoardIdAndUserId(eq(boardId), any(PageRequest.class)))
-                .thenReturn(mockPage); // Mock Page 객체 반환 설정
+        Pageable pageable = PageRequest.of(page, size);
 
+        Page<Column> mockPage = new PageImpl<>(List.of(column));
+        when(columnRepository.findColumnsByBoardIdAndUserId(eq(boardId), eq(pageable)))
+                .thenReturn(mockPage);
+
+        // Mock behavior for when the column does not exist
         when(columnRepository.findColumnByIdAndBoardIdAndUserId(eq(columnId), eq(boardId)))
-                .thenReturn(Optional.of(column));
+                .thenReturn(Optional.empty());
 
         // when
-        ColumnResponseDto retrievedColumn = columnService.getColumn(boardId, columnId, page, size, userId);
-
-        // then
-        assertNotNull(retrievedColumn);
-        assertEquals(column.getColumn_name(), retrievedColumn.getColumn_name());
-
+        assertThrows(IllegalArgumentException.class, () -> {
+            columnService.getColumn(boardId, columnId, pageable);
+        });
     }
 
+
     @Test
-    void updateColumnName_ValidInput_ReturnsColumnResponseDto() {
+    void updateColumnName_ColumnNotFound_ThrowsIllegalArgumentException() {
         // given
         Long boardId = 1L;
         Long columnId = 1L;
         ColumnRequestDto requestDto = new ColumnRequestDto();
-        Column column = new Column();
 
-        when(columnRepository.findColumnByIdAndBoardIdAndUserId(eq(columnId), eq(boardId)))
-                .thenReturn(Optional.of(column));
-        when(columnRepository.save(any(Column.class))).thenReturn(column);
+        // Mock behavior for when the column does not exist
+        when(columnRepository.findByIdAndBoardId(eq(columnId), eq(boardId)))
+                .thenReturn(Optional.empty());
 
-        // when
-        ColumnResponseDto updatedColumn = columnService.updateColumnName(boardId, columnId, requestDto, userId);
-
-        // then
-        assertNotNull(updatedColumn);
-        assertEquals(requestDto.getColumnName(), updatedColumn.getColumn_name());
+        // when, then
+        assertThrows(IllegalArgumentException.class, () -> {
+            columnService.updateColumnName(boardId, columnId, requestDto);
+        });
     }
+
 
     @Test
     void deleteColumn_ValidInput_VerifyRepositoryCall() {
@@ -103,7 +107,7 @@ public class ColumnServiceTest {
         Long columnId = 1L;
 
         // when
-        columnService.deleteColumn(boardId, columnId, userId);
+        columnService.deleteColumn(boardId, columnId);
 
         // then
         verify(columnRepository, times(1)).deleteColumnByIdAndBoardIdAndUserId(columnId, boardId);

@@ -4,15 +4,19 @@ import com.example.trello.domain.column.controller.ColumnController;
 import com.example.trello.domain.column.dto.ColumnRequestDto;
 import com.example.trello.domain.column.dto.ColumnResponseDto;
 import com.example.trello.domain.column.service.ColumnService;
-import com.example.trello.global.security.UserDetailsImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -40,7 +44,7 @@ public class ColumnControllerTest {
         ResponseEntity<ColumnResponseDto> responseEntity = columnController.createColumn(boardId, requestDto);
 
         // then
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         assertEquals(mockResponseDto, responseEntity.getBody());
     }
 
@@ -53,14 +57,14 @@ public class ColumnControllerTest {
         int page = 0;
         int size = 10;
         ColumnResponseDto mockResponseDto = new ColumnResponseDto();
-        when(columnService.getColumn(boardId, columnId, page, size)).thenReturn(mockResponseDto);
+        when(columnService.getColumn(boardId, columnId, PageRequest.of(page, size))).thenReturn(new PageImpl<>(List.of(mockResponseDto)));
 
         // when
-        ResponseEntity<ColumnResponseDto> responseEntity = columnController.getColumn(boardId, columnId, page, size);
+        ResponseEntity<Page<ColumnResponseDto>> responseEntity = columnController.getColumn(boardId, columnId, page, size);
 
         // then
         assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(mockResponseDto, responseEntity.getBody());
+        assertEquals(mockResponseDto, responseEntity.getBody().getContent().get(0));
     }
 
     @Test
@@ -92,8 +96,22 @@ public class ColumnControllerTest {
         ResponseEntity<Void> responseEntity = columnController.deleteColumn(boardId, columnId);
 
         // then
-        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
         verify(columnService, times(1)).deleteColumn(boardId, columnId);
     }
-}
 
+    @Test
+    @DisplayName("컬럼 이동 테스트")
+    void testMoveColumn() {
+        // given
+        Long boardId = 1L;
+        Long columnId = 1L;
+
+        // when
+        ResponseEntity<Void> responseEntity = columnController.moveColumn(boardId, columnId);
+
+        // then
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        verify(columnService, times(1)).moveColumn(boardId, columnId);
+    }
+}

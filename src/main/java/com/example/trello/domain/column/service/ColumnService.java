@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ColumnService {
@@ -18,36 +20,48 @@ public class ColumnService {
     private final ColumnRepository columnRepository;
 
     @Transactional
-    public ColumnResponseDto createColumn(Long boardId, ColumnRequestDto requestDto, Long userId) {
+    public ColumnResponseDto createColumn(Long boardId, ColumnRequestDto requestDto) {
         Column column = new Column();
+        column.setColumnName(requestDto.getColumnName());
         Column savedColumn = columnRepository.save(column);
         return new ColumnResponseDto(savedColumn);
     }
 
     @Transactional(readOnly = true)
-    public ColumnResponseDto getColumn(Long boardId, Long columnId, int page, int size, Long userId) {
-        Column column = existsByColumnIdAndUserIdAndBoardId(columnId, boardId);
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<ColumnResponseDto> getColumn(Long boardId, Long columnId, Pageable pageable) {
+        Column column = existsByColumnIdAndBoardId(columnId, boardId);
         Page<Column> columnPage = columnRepository.findColumnsByBoardIdAndUserId(boardId, pageable);
-        columnPage.map(ColumnResponseDto::new);
-        return new ColumnResponseDto(column);
+        return columnPage.map(ColumnResponseDto::new);
     }
 
-
     @Transactional
-    public ColumnResponseDto updateColumnName(Long boardId, Long columnId, ColumnRequestDto requestDto, Long userId) {
-        Column column = existsByColumnIdAndUserIdAndBoardId(columnId, boardId);
+    public ColumnResponseDto updateColumnName(Long boardId, Long columnId, ColumnRequestDto requestDto) {
+        Column column = existsByColumnIdAndBoardId(columnId, boardId);
+        column.setColumnName(requestDto.getColumnName());
         Column updatedColumn = columnRepository.save(column);
         return new ColumnResponseDto(updatedColumn);
     }
 
     @Transactional
-    public void deleteColumn(Long boardId, Long columnId, Long userId) {
+    public void deleteColumn(Long boardId, Long columnId) {
         columnRepository.deleteColumnByIdAndBoardIdAndUserId(columnId, boardId);
     }
 
-    private Column existsByColumnIdAndUserIdAndBoardId(Long columnId, Long boardId) {
-        return (Column) columnRepository.findColumnByIdAndBoardIdAndUserId(columnId, boardId)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 컬럼을 찾을 수 없습니다"));
+    @Transactional
+    public void moveColumn(Long boardId, Long columnId) {
+
+        Column columnToMove = existsByColumnIdAndBoardId(columnId, boardId);
+
+        List<Column> columns = columnRepository.findByBoardIdOrderByPosition(boardId);
+
+        columns.remove(columnToMove);
+        columns.add(columnToMove);
+
+        columnRepository.saveAll(columns);
+    }
+
+    private Column existsByColumnIdAndBoardId(Long columnId, Long boardId) {
+        return (Column) columnRepository.findByIdAndBoardId(columnId, boardId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 칼럼입니다."));
     }
 }

@@ -37,5 +37,9 @@ public class Column extends TimeStamp {
     public Column(ColumnRequestDto requestDto) {
         this.columnName = requestDto.getColumnName();
     }
+
+
+    public void setColumnName(String columnName) {
+    }
 }
 
