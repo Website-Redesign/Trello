@@ -67,7 +67,7 @@ public class ColumnService {
     }
 
     private Column existsByColumnIdAndBoardId(Long columnId, Long boardId) {
-        return (Column) columnRepository.findByIdAndBoardId(columnId, boardId)
+        return columnRepository.findByIdAndBoardId(columnId, boardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 칼럼입니다."));
     }
 }
