@@ -12,49 +12,54 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Slf4j
 @AllArgsConstructor
+@RestControllerAdvice
 public class ControllerAdvice {
 
     @ExceptionHandler({CommentNotFoundException.class,IllegalArgumentException.class})
     public ResponseEntity<ErrorResponse> handleBadRequestException(
-        CommentNotFoundException e) {
+        Exception e) {
         log.error(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        return createResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler({NoEntityException.class, NoColumnException.class})
     public ResponseEntity<ErrorResponse> handleNotFoundException(
-        CommentNotFoundException e) {
+        Exception e) {
         log.error(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return createResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
     @ExceptionHandler({NoPermissionException.class})
     public ResponseEntity<ErrorResponse> handleForbiddenException(
-        CommentNotFoundException e) {
+        Exception e) {
         log.error(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+        return createResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
     @ExceptionHandler({UserAlreadyRegisteredException.class, DecodeException.class,
         DuplicateUserInfoException.class})
     public ResponseEntity<ErrorResponse> handleConflictException(
-        CommentNotFoundException e) {
+        Exception e) {
         log.error(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+        return createResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler({IncorrectPasswordException.class})
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(
-        CommentNotFoundException e) {
+        Exception e) {
         log.error(e.getMessage());
-        ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        return createResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    private ResponseEntity<ErrorResponse> createResponse(HttpStatus status, String message) {
+        return ResponseEntity.status(status.value())
+            .body(ErrorResponse.builder()
+                .state(status)
+                .message(message)
+                .build());
     }
 }
