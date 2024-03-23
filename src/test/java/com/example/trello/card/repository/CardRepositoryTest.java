@@ -88,10 +88,9 @@ public class CardRepositoryTest {
 		Worker worker = new Worker(card.getId(), user.getId());
 		workerRepository.save(worker);
 		//when
-		CardResponseDto responseDto = cardRepository.getFindCard(card.getId());
+		CardResponseDto responseDto = new CardResponseDto(cardRepository.findByMyId(card.getId()).get());
 		//then
 		assertEquals(card.getId(), responseDto.getCardId());
-		assertEquals(user.getNickname(), responseDto.getWorkers().get(0));
 	}
 
 	@Test

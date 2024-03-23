@@ -2,8 +2,14 @@ package com.example.trello.domain.worker.service;
 
 import com.example.trello.domain.worker.entity.Worker;
 import com.example.trello.domain.worker.repository.WorkerRepository;
+import com.example.trello.global.exception.customException.DeadlineExpiredException;
+import com.example.trello.global.exception.customException.NoEntityException;
+import com.example.trello.global.exception.customException.NoPermissionException;
+import com.example.trello.global.exception.customException.UserAlreadyRegisteredException;
 import java.util.List;
+import java.util.Locale;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,35 +17,50 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class WorkerService {
 
-    public final WorkerRepository workerRepository;
+	private final WorkerRepository workerRepository;
 
-    @Transactional
-    public void createWorker(Long cardId, Long userId) {
-        Long columId = workerRepository.getColumnId(cardId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 카드 입니다."));
-        Long boardId = workerRepository.getBoardId(columId).orElseThrow(
-            () -> new IllegalArgumentException("존재하지 않는 보드 입니다."));
-        workerRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(
-            () -> new IllegalArgumentException("권한이 없습니다."));
-        if (workerRepository.findByCardIdAndUserId(cardId, userId).isPresent()) {
-            throw new IllegalArgumentException("이미 등록된 유저 입니다.");
-        }
-		if(workerRepository.getDeadLine(cardId)){
-			throw new IllegalArgumentException("deadLine 이 지나 등록되지 않았습니다.");
+	private final MessageSource messageSource;
+
+	@Transactional
+	public void createWorker(Long cardId, Long userId) {
+		Long columId = workerRepository.getColumnId(cardId).orElseThrow(
+			() -> new NoEntityException(messageSource.getMessage("no.card", null, Locale.KOREA)));
+		Long boardId = workerRepository.getBoardId(columId).orElseThrow(
+			() -> new NoEntityException(messageSource.getMessage("no.board", null, Locale.KOREA)));
+		workerRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(
+			() -> new NoPermissionException(
+				messageSource.getMessage("no.permission", null, Locale.KOREA)));
+		if (workerRepository.findByCardIdAndUserId(cardId, userId).isPresent()) {
+			throw new UserAlreadyRegisteredException(messageSource.getMessage("user.already.registered", null, Locale.KOREA));
 		}
-        Worker worker = new Worker(cardId, userId);
-        workerRepository.save(worker);
-    }
+		if (workerRepository.getDeadLine(cardId)) {
+			throw new DeadlineExpiredException(messageSource.getMessage("deadline.expired", null, Locale.KOREA));
+		}
+		Worker worker = new Worker(cardId, userId);
+		workerRepository.save(worker);
+	}
 
 	@Transactional
 	public void deleteWorker(Long cardId, Long userId) {
 		Worker worker = workerRepository.findByCardIdAndUserId(cardId, userId).orElseThrow(
-			() -> new IllegalArgumentException("등록되지 않은 유저 입니다.")
+			() -> new IllegalArgumentException(messageSource.getMessage("user.not.registered", null, Locale.KOREA))
 		);
 		worker.delete();
 	}
 
-    public List<Long> findByCardId(Long cardId) {
-        return workerRepository.findByCardId(cardId);
-    }
+	@Transactional(readOnly = true)
+	public List<String> getWorker(Long cardId, Long userId) {
+		Long columId = workerRepository.getColumnId(cardId).orElseThrow(
+			() -> new NoEntityException(messageSource.getMessage("no.card", null, Locale.KOREA)));
+		Long boardId = workerRepository.getBoardId(columId).orElseThrow(
+			() -> new NoEntityException(messageSource.getMessage("no.board", null, Locale.KOREA)));
+		workerRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(
+			() -> new NoPermissionException(
+				messageSource.getMessage("no.permission", null, Locale.KOREA)));
+		return workerRepository.getFindCardId(cardId);
+	}
+
+	public List<Long> findByCardId(Long cardId) {
+		return workerRepository.findByCardId(cardId);
+	}
 }

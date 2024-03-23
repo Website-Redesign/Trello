@@ -1,12 +1,17 @@
 package com.example.trello.global.exception;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.springframework.http.HttpStatus;
 
 @Getter
-@RequiredArgsConstructor
+@Builder
 public class ErrorResponse {
 
-    private final String message;
+    private String message;
+
+    private HttpStatus state;
 
 }
