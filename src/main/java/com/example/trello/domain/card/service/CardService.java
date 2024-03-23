@@ -6,6 +6,8 @@ import com.example.trello.domain.card.dto.CardResponseDto;
 import com.example.trello.domain.card.entity.Card;
 import com.example.trello.domain.card.repository.CardRepository;
 import com.example.trello.domain.user.entity.User;
+import com.example.trello.global.exception.customException.NoEntityException;
+import com.example.trello.global.exception.customException.NoPermissionException;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Objects;
@@ -30,7 +32,7 @@ public class CardService {
 
 	public void createCard(Long columnId, Long userId, CardRequestDto requestDto) {
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, columnId).orElseThrow(
-			() -> new IllegalArgumentException("권한이 없습니다..")
+			() -> new NoPermissionException("권한이 없습니다..")
 		);
 		Card card = new Card(columnId, requestDto);
 		cardRepository.save(card);
@@ -38,10 +40,10 @@ public class CardService {
 
 	public String updateCard(Long cardId, Long userId, CardRequestDto requestDto) {
 		Card card = cardRepository.findByMyId(cardId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+			() -> new NoEntityException("존재하지 않는 카드 입니다.")
 		);
 //		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
-//			() -> new IllegalArgumentException("권한이 없습니다..")
+//			() -> new NoPermissionException("권한이 없습니다..")
 //		);
 		RLock lock = redissonClient.getLock("card_"+cardId);
 		lock.lock();
@@ -55,10 +57,10 @@ public class CardService {
 
 	public void updateCardDeadLine(Long cardId, Long userId, CardDeadLineRequestDto requestDto){
 		Card card = cardRepository.findByMyId(cardId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+			() -> new NoEntityException("존재하지 않는 카드 입니다.")
 		);
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
-			() -> new IllegalArgumentException("권한이 없습니다..")
+			() -> new NoPermissionException("권한이 없습니다..")
 		);
 		Date date = new Date();
 		Date deadLine = Date.from(requestDto.getDeadLine().atZone(ZoneId.systemDefault()).toInstant());
@@ -71,10 +73,10 @@ public class CardService {
 
 	public void deleteCard(Long cardId, Long userId) {
 		Card card = cardRepository.findByMyId(cardId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+			() -> new NoEntityException("존재하지 않는 카드 입니다.")
 		);
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
-			() -> new IllegalArgumentException("권한이 없습니다..")
+			() -> new NoPermissionException("권한이 없습니다..")
 		);
 		card.delete();
 	}
@@ -83,17 +85,17 @@ public class CardService {
 	@Cacheable(value = "Card", key = "#cardId", cacheManager = "cacheManager", unless = "#result == null")
 	public CardResponseDto getCard(Long cardId, Long userId) {
 		Card card = cardRepository.findByMyId(cardId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+			() -> new NoEntityException("존재하지 않는 카드 입니다.")
 		);
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
-			() -> new IllegalArgumentException("권한이 없습니다..")
+			() -> new NoPermissionException("권한이 없습니다..")
 		);
 		return new CardResponseDto(card);
 	}
 
 	public Card findCard(Long cardId) {
 		return cardRepository.findById(cardId).orElseThrow(
-			() -> new IllegalArgumentException("존재하지 않는 카드 입니다.")
+			() -> new NoEntityException("존재하지 않는 카드 입니다.")
 		);
 	}
 }
