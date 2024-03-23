@@ -5,8 +5,8 @@ import com.example.trello.domain.column.dto.ColumnResponseDto;
 import com.example.trello.domain.column.entity.Column;
 import com.example.trello.domain.column.repository.ColumnRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +18,8 @@ import java.util.List;
 public class ColumnService {
 
     private final ColumnRepository columnRepository;
+
+    private final CacheManager cacheManager;
 
     @Transactional
     public ColumnResponseDto createColumn(Long boardId, ColumnRequestDto requestDto) {
@@ -39,6 +41,9 @@ public class ColumnService {
         Column column = existsByColumnIdAndBoardId(columnId, boardId);
         column.setColumnName(requestDto.getColumnName());
         Column updatedColumn = columnRepository.save(column);
+
+        cacheManager.getCache("column").put(columnId, new ColumnResponseDto(updatedColumn));
+
         return new ColumnResponseDto(updatedColumn);
     }
 
