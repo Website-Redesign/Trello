@@ -21,7 +21,6 @@ public class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
     private final QColumn qColumn = QColumn.column;
 
-
     @Override
     public Optional<Column> findColumnByIdAndBoardIdAndUserId(Long columnId, Long boardId) {
         return Optional.ofNullable(
@@ -29,7 +28,7 @@ public class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
                         .select(qColumn)
                         .from(qColumn)
                         .where(
-                                qColumn.id.eq(columnId),
+                                qColumn.columnId.eq(columnId), // 수정
                                 qColumn.boardId.eq(boardId)
                         )
                         .fetchOne()
@@ -54,7 +53,7 @@ public class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
         long deletedCount = jpaQueryFactory
                 .delete(qColumn)
                 .where(
-                        qColumn.id.eq(columnId),
+                        qColumn.columnId.eq(columnId),
                         qColumn.boardId.eq(boardId)
                 )
                 .execute();
@@ -78,11 +77,10 @@ public class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
                         .select(qColumn)
                         .from(qColumn)
                         .where(
-                                qColumn.id.eq(columnId),
+                                qColumn.columnId.eq(columnId),
                                 qColumn.boardId.eq(boardId)
                         )
                         .fetchOne()
         );
     }
-
 }
