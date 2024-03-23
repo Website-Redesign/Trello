@@ -97,7 +97,7 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	@Cacheable(value = "User", key = "#userId", cacheManager = "cacheManager", unless = "#result == null") // 리턴 값 따라간다
+	@Cacheable(value = "User", key = "#userId", cacheManager = "cacheManager", unless = "#result == null")
 	public UserResponseDto getUser(Long userId) {
 		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new IllegalArgumentException("계정 정보가 없습니다.")

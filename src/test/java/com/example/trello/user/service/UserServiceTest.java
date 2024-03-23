@@ -118,4 +118,6 @@ public class UserServiceTest {
 		assertEquals(responseDto.getNickname(), user.getNickname());
 	}
 
+
+
 }

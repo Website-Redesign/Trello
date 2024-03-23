@@ -39,6 +39,17 @@ public class WorkerService {
 		worker.delete();
 	}
 
+	@Transactional(readOnly = true)
+	public List<String> getWorker(Long cardId,Long userId){
+		Long columId = workerRepository.getColumnId(cardId).orElseThrow(
+			() -> new IllegalArgumentException("존재하지 않는 카드 입니다."));
+		Long boardId = workerRepository.getBoardId(columId).orElseThrow(
+			() -> new IllegalArgumentException("존재하지 않는 보드 입니다."));
+		workerRepository.findByUserIdAndBoardId(userId, boardId).orElseThrow(
+			() -> new IllegalArgumentException("권한이 없습니다."));
+		return workerRepository.getFindCardId(cardId);
+	}
+
     public List<Long> findByCardId(Long cardId) {
         return workerRepository.findByCardId(cardId);
     }

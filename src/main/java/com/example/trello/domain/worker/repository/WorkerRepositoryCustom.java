@@ -1,5 +1,6 @@
 package com.example.trello.domain.worker.repository;
 
+import com.example.trello.domain.card.dto.CardResponseDto;
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.worker.entity.Worker;
 import java.util.Date;
@@ -17,6 +18,8 @@ public interface WorkerRepositoryCustom {
 
 	Optional<Long> getBoardId(Long columnId);
 	Optional<Long> getColumnId(Long cardId);
+
+	List<String> getFindCardId(Long cardId);
 
 	Boolean getDeadLine(Long cardId);
 }
