@@ -16,7 +16,7 @@ import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
-public abstract class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
+public class ColumnRepositoryCustomImpl implements ColumnRepositoryCustom {
 
     private final JPAQueryFactory jpaQueryFactory;
     private final QColumn qColumn = QColumn.column;
@@ -29,7 +29,7 @@ public abstract class ColumnRepositoryCustomImpl implements ColumnRepositoryCust
                         .select(qColumn)
                         .from(qColumn)
                         .where(
-                                qColumn.columnId.eq(columnId),
+                                qColumn.id.eq(columnId),
                                 qColumn.boardId.eq(boardId)
                         )
                         .fetchOne()
@@ -49,16 +49,40 @@ public abstract class ColumnRepositoryCustomImpl implements ColumnRepositoryCust
         return PageableExecutionUtils.getPage(content, pageable, query::fetchCount);
     }
 
-
     @Override
     public boolean deleteColumnByIdAndBoardIdAndUserId(Long columnId, Long boardId) {
         long deletedCount = jpaQueryFactory
                 .delete(qColumn)
                 .where(
-                        qColumn.columnId.eq(columnId),
+                        qColumn.id.eq(columnId),
                         qColumn.boardId.eq(boardId)
                 )
                 .execute();
         return deletedCount > 0;
     }
+
+    @Override
+    public List<Column> findByBoardIdOrderByPosition(Long boardId) {
+        return jpaQueryFactory
+                .select(qColumn)
+                .from(qColumn)
+                .where(qColumn.boardId.eq(boardId))
+                .orderBy(qColumn.boardId.asc())
+                .fetch();
+    }
+
+    @Override
+    public Optional<Column> findByIdAndBoardId(Long columnId, Long boardId) {
+        return Optional.ofNullable(
+                jpaQueryFactory
+                        .select(qColumn)
+                        .from(qColumn)
+                        .where(
+                                qColumn.id.eq(columnId),
+                                qColumn.boardId.eq(boardId)
+                        )
+                        .fetchOne()
+        );
+    }
+
 }
