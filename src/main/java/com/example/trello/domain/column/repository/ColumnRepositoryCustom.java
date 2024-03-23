@@ -3,12 +3,10 @@ package com.example.trello.domain.column.repository;
 import com.example.trello.domain.column.entity.Column;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface ColumnRepositoryCustom {
 
     Optional<Column> findColumnByIdAndBoardIdAndUserId(Long columnId, Long boardId);
