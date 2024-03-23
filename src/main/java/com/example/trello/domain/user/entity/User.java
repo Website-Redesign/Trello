@@ -55,6 +55,7 @@ public class User extends TimeStamp {
         this.role = role;
     }
 
+
     public User(SignupRequestDto requestDto) {
         email = requestDto.getEmail();
         password = requestDto.getPassword();

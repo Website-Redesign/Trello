@@ -1,8 +1,15 @@
 package com.example.trello.domain.card.entity;
 
+import com.example.trello.domain.card.dto.CardDeadLineRequestDto;
 import com.example.trello.domain.card.dto.CardRequestDto;
 import com.example.trello.global.util.TimeStamp;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +41,11 @@ public class Card extends TimeStamp {
 	@Column(nullable = false)
 	private Long columnId;
 
+	@Column
+	@JsonSerialize(using = LocalDateTimeSerializer.class)
+	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
+	private LocalDateTime deadLine;
+
 	public Card(Long columnId, CardRequestDto requestDto) {
 		this.cardname = requestDto.getCardname();
 		this.description = requestDto.getDescription();
@@ -45,5 +57,9 @@ public class Card extends TimeStamp {
 		this.cardname = requestDto.getCardname();
 		this.description = requestDto.getDescription();
 		this.color = requestDto.getColor();
+	}
+
+	public void deadLineUpdate(CardDeadLineRequestDto requestDto){
+		deadLine = requestDto.getDeadLine();
 	}
 }

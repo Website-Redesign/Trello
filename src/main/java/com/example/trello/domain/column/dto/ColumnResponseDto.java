@@ -13,16 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ColumnResponseDto extends TimeStamp {
-    private Long id;
+    private Long columnId;
     private String column_name;
     private Long boardId;
 
     public ColumnResponseDto(Column column) {
-        this.column_name = column.getColumn_name();
+        this.column_name = column.getColumnName();
         this.boardId = column.getBoardId();
-    }
-
-    public Long getColumnId() {
-        return id;
     }
 }

@@ -18,16 +18,14 @@ public class ColumnService {
     private final ColumnRepository columnRepository;
 
     @Transactional
-    public ColumnResponseDto createColumn(Long boardId, ColumnRequestDto requestDto) {
+    public ColumnResponseDto createColumn(Long boardId, ColumnRequestDto requestDto, Long userId) {
         Column column = new Column();
-        column.setColumnName(requestDto.getColumn_name());
-        column.setBoardId(boardId);
         Column savedColumn = columnRepository.save(column);
         return new ColumnResponseDto(savedColumn);
     }
 
     @Transactional(readOnly = true)
-    public ColumnResponseDto getColumn(Long boardId, Long columnId, int page, int size) {
+    public ColumnResponseDto getColumn(Long boardId, Long columnId, int page, int size, Long userId) {
         Column column = existsByColumnIdAndUserIdAndBoardId(columnId, boardId);
         Pageable pageable = PageRequest.of(page, size);
         Page<Column> columnPage = columnRepository.findColumnsByBoardIdAndUserId(boardId, pageable);
@@ -37,15 +35,14 @@ public class ColumnService {
 
 
     @Transactional
-    public ColumnResponseDto updateColumnName(Long boardId, Long columnId, ColumnRequestDto requestDto) {
+    public ColumnResponseDto updateColumnName(Long boardId, Long columnId, ColumnRequestDto requestDto, Long userId) {
         Column column = existsByColumnIdAndUserIdAndBoardId(columnId, boardId);
-        column.setColumnName(requestDto.getColumn_name());
         Column updatedColumn = columnRepository.save(column);
         return new ColumnResponseDto(updatedColumn);
     }
 
     @Transactional
-    public void deleteColumn(Long boardId, Long columnId) {
+    public void deleteColumn(Long boardId, Long columnId, Long userId) {
         columnRepository.deleteColumnByIdAndBoardIdAndUserId(columnId, boardId);
     }
 

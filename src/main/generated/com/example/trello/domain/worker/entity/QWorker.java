@@ -19,11 +19,22 @@ public class QWorker extends EntityPathBase<Worker> {
 
     public static final QWorker worker = new QWorker("worker");
 
-    public final NumberPath<Long> card_id = createNumber("card_id", Long.class);
+    public final com.example.trello.global.util.QTimeStamp _super = new com.example.trello.global.util.QTimeStamp(this);
+
+    public final NumberPath<Long> cardId = createNumber("cardId", Long.class);
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createAt = _super.createAt;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
-    public final NumberPath<Long> user_id = createNumber("user_id", Long.class);
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
+
+    public final NumberPath<Long> userId = createNumber("userId", Long.class);
 
     public QWorker(String variable) {
         super(Worker.class, forVariable(variable));

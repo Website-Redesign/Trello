@@ -46,6 +46,8 @@ public class CustomAuthentication implements Authentication {
         this.authenticated = isAuthenticated;
     }
 
+
+
     @Override
     public String getName() {
         return userDetails.getUsername(); // 사용자 이름

@@ -4,6 +4,7 @@ import com.example.trello.domain.column.controller.ColumnController;
 import com.example.trello.domain.column.dto.ColumnRequestDto;
 import com.example.trello.domain.column.dto.ColumnResponseDto;
 import com.example.trello.domain.column.service.ColumnService;
+import com.example.trello.global.security.UserDetailsImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

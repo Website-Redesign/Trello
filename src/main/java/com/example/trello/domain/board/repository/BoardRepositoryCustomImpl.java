@@ -60,12 +60,12 @@ public class BoardRepositoryCustomImpl implements BoardRepositoryCustom {
             .select(Projections.constructor(BoardDetailResponse.class,
                 board.id, board.name, board.description, board.color,
                 Projections.constructor(ColumnDetailResponse.class,
-                    column.id, column.column_name,
+                    column.columnId, column.columnName,
                     Projections.constructor(CardDetailResponse.class,
                         card.id, card.cardname, card.color))))
             .from(board)
             .leftJoin(column).on(board.id.eq(column.boardId))
-            .leftJoin(card).on(column.id.eq(card.columnId))
+            .leftJoin(card).on(column.columnId.eq(card.columnId))
             .where(board.id.eq(boardId))
             .fetch();
     }

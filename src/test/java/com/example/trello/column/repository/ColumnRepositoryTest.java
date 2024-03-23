@@ -32,8 +32,6 @@ public class ColumnRepositoryTest {
         Long columnId = 1L;
         Long boardId = 1L;
         Column column = new Column();
-        column.setColumnId(columnId);
-        column.setBoardId(boardId);
         when(columnRepositoryCustom.findColumnByIdAndBoardIdAndUserId(anyLong(), anyLong())).thenReturn(Optional.of(column));
 
         // when
@@ -41,7 +39,7 @@ public class ColumnRepositoryTest {
 
         // then
         assertThat(foundColumn).isPresent();
-        assertThat(foundColumn.get().getId()).isEqualTo(columnId);
+        assertThat(foundColumn.get().getColumnId()).isEqualTo(columnId);
         assertThat(foundColumn.get().getBoardId()).isEqualTo(boardId);
     }
 
@@ -67,8 +65,6 @@ public class ColumnRepositoryTest {
         Long columnId = 1L;
         Long boardId = 1L;
         Column column = new Column();
-        column.setColumnId(columnId);
-        column.setBoardId(boardId);
         columnRepository.save(column);
         when(columnRepositoryCustom.deleteColumnByIdAndBoardIdAndUserId(anyLong(), anyLong())).thenAnswer(invocation -> {
             columnRepository.delete(column);

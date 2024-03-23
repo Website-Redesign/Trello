@@ -40,17 +40,15 @@ public class ColumnServiceTest {
         Long boardId = 1L;
         ColumnRequestDto requestDto = new ColumnRequestDto();
         Column savedColumn = new Column();
-        savedColumn.setColumnName("Test Column");
-        savedColumn.setBoardId(boardId);
 
         when(columnRepository.save(any(Column.class))).thenReturn(savedColumn);
 
         // when
-        ColumnResponseDto createdColumn = columnService.createColumn(boardId, requestDto);
+        ColumnResponseDto createdColumn = columnService.createColumn(boardId, requestDto, userId);
 
         // then
         assertNotNull(createdColumn);
-        assertEquals(savedColumn.getColumn_name(), createdColumn.getColumn_name());
+        assertEquals(savedColumn.getColumnName(), createdColumn.getColumn_name());
     }
 
     @Test
@@ -61,9 +59,6 @@ public class ColumnServiceTest {
         int page = 0;
         int size = 10;
         Column column = new Column();
-        column.setColumnId(columnId);
-        column.setColumnName("Test Column");
-        column.setBoardId(boardId);
 
         Page<Column> mockPage = new PageImpl<>(List.of(column)); // Mock Page 객체 생성
         when(columnRepository.findColumnsByBoardIdAndUserId(eq(boardId), any(PageRequest.class)))
@@ -73,7 +68,7 @@ public class ColumnServiceTest {
                 .thenReturn(Optional.of(column));
 
         // when
-        ColumnResponseDto retrievedColumn = columnService.getColumn(boardId, columnId, page, size);
+        ColumnResponseDto retrievedColumn = columnService.getColumn(boardId, columnId, page, size, userId);
 
         // then
         assertNotNull(retrievedColumn);
@@ -88,16 +83,13 @@ public class ColumnServiceTest {
         Long columnId = 1L;
         ColumnRequestDto requestDto = new ColumnRequestDto();
         Column column = new Column();
-        column.setColumnId(columnId);
-        column.setColumnName("Test Column");
-        column.setBoardId(boardId);
 
         when(columnRepository.findColumnByIdAndBoardIdAndUserId(eq(columnId), eq(boardId)))
                 .thenReturn(Optional.of(column));
         when(columnRepository.save(any(Column.class))).thenReturn(column);
 
         // when
-        ColumnResponseDto updatedColumn = columnService.updateColumnName(boardId, columnId, requestDto);
+        ColumnResponseDto updatedColumn = columnService.updateColumnName(boardId, columnId, requestDto, userId);
 
         // then
         assertNotNull(updatedColumn);
@@ -111,7 +103,7 @@ public class ColumnServiceTest {
         Long columnId = 1L;
 
         // when
-        columnService.deleteColumn(boardId, columnId);
+        columnService.deleteColumn(boardId, columnId, userId);
 
         // then
         verify(columnRepository, times(1)).deleteColumnByIdAndBoardIdAndUserId(columnId, boardId);
