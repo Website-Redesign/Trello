@@ -2,10 +2,12 @@ package com.example.trello.global.exception;
 
 import com.example.trello.global.exception.customException.DuplicateUserInfoException;
 import com.example.trello.global.exception.customException.IncorrectPasswordException;
+import com.example.trello.global.exception.customException.LogoutException;
 import com.example.trello.global.exception.customException.NoColumnException;
 import com.example.trello.global.exception.customException.NoEntityException;
 import com.example.trello.global.exception.customException.NoPermissionException;
 import com.example.trello.global.exception.customException.UserAlreadyRegisteredException;
+import io.jsonwebtoken.SignatureException;
 import jakarta.websocket.DecodeException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,7 +50,7 @@ public class ControllerAdvice {
         return createResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
-    @ExceptionHandler({IncorrectPasswordException.class})
+    @ExceptionHandler({IncorrectPasswordException.class, LogoutException.class})
     public ResponseEntity<ErrorResponse> handleUnauthorizedException(
         Exception e) {
         log.error(e.getMessage());
