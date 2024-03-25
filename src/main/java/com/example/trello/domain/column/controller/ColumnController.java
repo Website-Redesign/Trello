@@ -4,7 +4,9 @@ import com.example.trello.domain.column.dto.ColumnRequestDto;
 import com.example.trello.domain.column.dto.ColumnResponseDto;
 import com.example.trello.domain.column.service.ColumnService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,37 +18,46 @@ public class ColumnController {
     private final ColumnService columnService;
 
     @PostMapping
-    public ResponseEntity<Void> postColumn(
+    public ResponseEntity<ColumnResponseDto> createColumn(
             @PathVariable Long boardId,
-            @RequestBody ColumnRequestDto columnRequestDto) {
-        columnService.createColumn(boardId, columnRequestDto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+            @RequestBody ColumnRequestDto requestDto) {
+        ColumnResponseDto columnResponseDto = columnService.createColumn(boardId, requestDto);
+        return ResponseEntity.ok().body(columnResponseDto);
     }
 
     @GetMapping("/{columnId}")
-    public ResponseEntity<ColumnResponseDto> getColumn(
+    public ResponseEntity<Page<ColumnResponseDto>> getColumn(
             @PathVariable Long boardId,
             @PathVariable Long columnId,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size){
-        ColumnResponseDto columnResponseDto = columnService.getColumns(boardId, columnId, page, size);
-        return ResponseEntity.ok(columnResponseDto);
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<ColumnResponseDto> columnResponsePage = columnService.getColumn(boardId, columnId, pageable);
+        return ResponseEntity.ok().body(columnResponsePage);
     }
 
     @PutMapping("/{columnId}")
-    public ResponseEntity<Void> putColumn(
+    public ResponseEntity<ColumnResponseDto> updateColumnName(
             @PathVariable Long boardId,
             @PathVariable Long columnId,
-            @RequestBody ColumnRequestDto columnRequestDto) {
-        columnService.updateColumnName(boardId, columnId, columnRequestDto);
-        return ResponseEntity.ok().build();
+            @RequestBody ColumnRequestDto requestDto) {
+        ColumnResponseDto columnResponseDto = columnService.updateColumnName(boardId, columnId, requestDto);
+        return ResponseEntity.ok().body(columnResponseDto);
     }
 
     @DeleteMapping("/{columnId}")
     public ResponseEntity<Void> deleteColumn(
             @PathVariable Long boardId,
             @PathVariable Long columnId) {
-        columnService.deleteColumns(boardId, columnId);
-        return ResponseEntity.noContent().build();
+        columnService.deleteColumn(boardId, columnId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/{columnId}/move")
+    public ResponseEntity<Void> moveColumn(
+            @PathVariable Long boardId,
+            @PathVariable Long columnId) {
+        columnService.moveColumn(boardId, columnId);
+        return ResponseEntity.ok().build();
     }
 }

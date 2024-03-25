@@ -20,23 +20,26 @@ public class Column extends TimeStamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long columnId;
 
-    private String column_name;
+    private String columnName;
+
+    private Long userId;
 
     private Long boardId;
 
-    public Column(ColumnRequestDto requestDto) {
-        this.column_name = requestDto.getColumn_name();
-        this.boardId = requestDto.getBoard_id();
-    }
-
-    public void setColumnName(String columnName) {
-        this.column_name = columnName;
-    }
-
-    public void setBoardId(Long boardId) {
+    public Column(String columnName, Long userId, Long boardId) {
+        this.columnName = columnName;
+        this.userId = userId;
         this.boardId = boardId;
     }
 
+    public Column(ColumnRequestDto requestDto) {
+        this.columnName = requestDto.getColumnName();
+    }
+
+
+    public void setColumnName(String columnName) {
+    }
 }
+

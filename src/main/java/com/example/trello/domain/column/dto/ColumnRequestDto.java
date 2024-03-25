@@ -1,12 +1,15 @@
 package com.example.trello.domain.column.dto;
 
-import com.example.trello.domain.column.entity.Column;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
+@NoArgsConstructor
 public class ColumnRequestDto {
-    public String column_name;
-    public Long board_id;
+    public String columnName;
+
+    public void setColumnName(String columnName) {
+        this.columnName = columnName;
+    }
 }
