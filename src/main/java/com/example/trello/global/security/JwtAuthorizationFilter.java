@@ -1,14 +1,12 @@
 package com.example.trello.global.security;
 
-import static org.hibernate.internal.CoreLogging.logger;
-
 import com.example.trello.domain.user.entity.User;
+import com.example.trello.global.exception.customException.LogoutException;
 import com.example.trello.global.util.JwtUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -54,7 +52,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                     return;
                 }
                 if(!jwtUtil.validateToken(tokenValue)){
-                    throw new java.security.SignatureException("로그아웃 상태입니다.");
+                    throw new LogoutException("로그아웃 상태입니다.");
                 }
                 Claims info = jwtUtil.getUserInfoFromToken(tokenValue);
                 setAuthentication(info);

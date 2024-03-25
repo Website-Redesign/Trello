@@ -42,6 +42,9 @@ public class Card extends TimeStamp {
 	private Long columnId;
 
 	@Column
+	private int updateCount;
+
+	@Column
 	@JsonSerialize(using = LocalDateTimeSerializer.class)
 	@JsonDeserialize(using = LocalDateTimeDeserializer.class)
 	private LocalDateTime deadLine;
@@ -57,6 +60,10 @@ public class Card extends TimeStamp {
 		this.cardname = requestDto.getCardname();
 		this.description = requestDto.getDescription();
 		this.color = requestDto.getColor();
+	}
+
+	public void setCount(int count) {
+		this.updateCount = count;
 	}
 
 	public void deadLineUpdate(CardDeadLineRequestDto requestDto){

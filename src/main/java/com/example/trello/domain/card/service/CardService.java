@@ -11,6 +11,7 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CardService {
 
@@ -33,6 +33,9 @@ public class CardService {
 
 	private final MessageSource messageSource;
 
+	int test = 1;
+
+	@Transactional
 	public void createCard(Long columnId, Long userId, CardRequestDto requestDto) {
 		cardRepository.existsByUserIdAndColumnIdInTeam(userId, columnId).orElseThrow(
 			() -> new NoPermissionException(
@@ -42,23 +45,33 @@ public class CardService {
 		cardRepository.save(card);
 	}
 
-	public String updateCard(Long cardId, Long userId, CardRequestDto requestDto) {
-		Card card = cardRepository.findByMyId(cardId).orElseThrow(
-			() -> new NoEntityException(messageSource.getMessage("no.card", null, Locale.KOREA))
-		);
-		cardRepository.existsByUserIdAndColumnIdInTeam(userId, card.getColumnId()).orElseThrow(
-			() -> new NoPermissionException(messageSource.getMessage("no.permission", null, Locale.KOREA))
-		);
-		RLock lock = redissonClient.getLock("card_" + cardId);
-		lock.lock();
-		card.update(requestDto);
-		cardRepository.update(card);
-		CardResponseDto responseDto = new CardResponseDto(card);
-		Objects.requireNonNull(cacheManager.getCache("Card")).put(cardId, responseDto);
-		lock.unlock();
-		return requestDto.getCardname();
+	public void updateCard(Long cardId, Long userId, CardRequestDto requestDto) {
+		RLock lock = redissonClient.getFairLock("card_" + cardId);
+		try {
+			boolean isLocked = lock.tryLock(10, 60, TimeUnit.SECONDS);
+			if (isLocked) {
+				try {
+					Card card = cardRepository.findByMyId(cardId).orElseThrow(
+						() -> new NoEntityException(
+							messageSource.getMessage("no.card", null, Locale.KOREA))
+					);
+					cardRepository.existsByUserIdAndColumnIdInTeam(userId,card.getColumnId()).orElseThrow(
+						() -> new NoPermissionException(messageSource.getMessage("no.permission", null, Locale.KOREA)));
+					card.update(requestDto);
+					card.setCount(card.getUpdateCount() + 1);
+					cardRepository.save(card);
+					CardResponseDto responseDto = new CardResponseDto(card);
+					Objects.requireNonNull(cacheManager.getCache("Card")).put(cardId, responseDto);
+				} finally {
+					lock.unlock();
+				}
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
+	@Transactional
 	public void updateCardDeadLine(Long cardId, Long userId, CardDeadLineRequestDto requestDto) {
 		Card card = cardRepository.findByMyId(cardId).orElseThrow(
 			() -> new NoEntityException(messageSource.getMessage("no.card", null, Locale.KOREA))
@@ -78,6 +91,7 @@ public class CardService {
 		cardRepository.update(card);
 	}
 
+	@Transactional
 	public void deleteCard(Long cardId, Long userId) {
 		Card card = cardRepository.findByMyId(cardId).orElseThrow(
 			() -> new NoEntityException(messageSource.getMessage("no.card", null, Locale.KOREA))
@@ -102,9 +116,11 @@ public class CardService {
 		return new CardResponseDto(card);
 	}
 
+	@Transactional
 	public Card findCard(Long cardId) {
 		return cardRepository.findById(cardId).orElseThrow(
 			() -> new NoEntityException(messageSource.getMessage("no.card", null, Locale.KOREA))
 		);
 	}
+
 }
