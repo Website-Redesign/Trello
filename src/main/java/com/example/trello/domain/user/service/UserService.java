@@ -112,7 +112,7 @@ public class UserService {
 	}
 
 	@Transactional(readOnly = true)
-	//@Cacheable(value = "User", key = "#userId", cacheManager = "cacheManager", unless = "#result == null")
+	@Cacheable(value = "User", key = "#userId", cacheManager = "cacheManager", unless = "#result == null")
 	public UserResponseDto getUser(Long userId) {
 		User user = userRepository.findByMyId(userId).orElseThrow(
 			() -> new NoEntityException(
