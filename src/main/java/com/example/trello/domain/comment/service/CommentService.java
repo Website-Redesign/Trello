@@ -8,6 +8,7 @@ import com.example.trello.domain.comment.entity.Comment;
 import com.example.trello.domain.comment.repository.CommentRepository;
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.service.UserService;
+import com.example.trello.global.aop.TimeTrace;
 import com.example.trello.global.exception.CommentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ public class CommentService {
     private final CardService cardService;
     private final UserService userService;
 
+    @TimeTrace
     @Transactional
     public void createComment(Long cardId, CommentRequestDto commentRequestDto, User user) {
 
