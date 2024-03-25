@@ -4,6 +4,7 @@ import com.example.trello.domain.comment.dto.CommentRequestDto;
 import com.example.trello.domain.comment.dto.CommentResponseDto;
 import com.example.trello.domain.comment.service.CommentService;
 import com.example.trello.domain.notification.service.NotificationService;
+import com.example.trello.global.dto.CommonResponseDto;
 import com.example.trello.global.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,29 +30,32 @@ public class CommentController {
     private final NotificationService notificationService;
 
     @PostMapping
-    public ResponseEntity<Void> createComment(
+    public ResponseEntity<CommonResponseDto<Void>> createComment(
         @PathVariable Long cardId,
         @RequestBody CommentRequestDto commentRequestDto,
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         commentService.createComment(cardId, commentRequestDto, userDetails.getUser());
         notificationService.notifyComment(cardId);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(CommonResponseDto.<Void>builder().build());
     }
 
     @GetMapping
-    public ResponseEntity<Page<CommentResponseDto>> getCommentsByCardId(
+    public ResponseEntity<CommonResponseDto<Page<CommentResponseDto>>> getCommentsByCardId(
         @PathVariable Long cardId,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size
     ) {
         Page<CommentResponseDto> comments =
             commentService.getCommentsByCardId(cardId, page - 1, size);
-        return ResponseEntity.ok(comments);
+        return ResponseEntity.ok().body(CommonResponseDto.<Page<CommentResponseDto>>builder()
+            .date(comments)
+            .build());
     }
 
     @PutMapping("/{commentId}")
-    public ResponseEntity<Void> updateComment(
+    public ResponseEntity<CommonResponseDto<Void>> updateComment(
         @PathVariable Long cardId,
         @PathVariable Long commentId,
         @RequestBody CommentRequestDto commentRequestDto,
@@ -59,16 +63,16 @@ public class CommentController {
     ) {
         commentService.updateComment(cardId, commentId, userDetails.getUser().getId(),
             commentRequestDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(CommonResponseDto.<Void>builder().build());
     }
 
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<Void> deleteComment(
+    public ResponseEntity<CommonResponseDto<Void>> deleteComment(
         @PathVariable Long cardId,
         @PathVariable Long commentId,
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
         commentService.deleteComment(cardId, commentId, userDetails.getUser().getId());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(CommonResponseDto.<Void>builder().build());
     }
 }
