@@ -19,6 +19,14 @@ public class QUser extends EntityPathBase<User> {
 
     public static final QUser user = new QUser("user");
 
+    public final com.example.trello.global.util.QTimeStamp _super = new com.example.trello.global.util.QTimeStamp(this);
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> createAt = _super.createAt;
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
+
     public final StringPath email = createString("email");
 
     public final NumberPath<Long> id = createNumber("id", Long.class);
@@ -32,6 +40,9 @@ public class QUser extends EntityPathBase<User> {
     public final StringPath photo = createString("photo");
 
     public final EnumPath<UserRoleEnum> role = createEnum("role", UserRoleEnum.class);
+
+    //inherited
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
 
     public QUser(String variable) {
         super(User.class, forVariable(variable));

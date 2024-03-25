@@ -108,7 +108,7 @@ public class WorkerRepositoryCustomImpl implements WorkerRepositoryCustom {
 
 
 	private BooleanExpression columnIdEq(Long columnId) {
-		return Objects.nonNull(columnId) ? QColumn.column.id.eq(columnId) : null;
+		return Objects.nonNull(columnId) ? QColumn.column.columnId.eq(columnId) : null;
 	}
 
 	@Override

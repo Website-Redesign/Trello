@@ -8,6 +8,7 @@ import com.example.trello.domain.comment.entity.Comment;
 import com.example.trello.domain.comment.repository.CommentRepository;
 import com.example.trello.domain.user.entity.User;
 import com.example.trello.domain.user.service.UserService;
+import com.example.trello.global.aop.TimeTrace;
 import com.example.trello.global.exception.CommentNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ public class CommentService {
     private final CardService cardService;
     private final UserService userService;
 
+    @TimeTrace
     @Transactional
     public void createComment(Long cardId, CommentRequestDto commentRequestDto, User user) {
 
@@ -30,7 +32,7 @@ public class CommentService {
 
         String nickname = userService.findNickname(user.getId());
 
-        Comment comment = new Comment(commentRequestDto.getComment(), card.getId(), user.getId(),
+        Comment comment = new Comment(commentRequestDto.getComment(), user.getId(), card.getId(),
             nickname);
 
         commentRepository.save(comment);
@@ -68,9 +70,7 @@ public class CommentService {
     }
 
     public Comment findLatestComment(Long cardId) {
-        return commentRepository.findFirstByCardIdOrderByCreateAtDesc(
-            cardId).orElseThrow(
-            () -> new IllegalArgumentException("댓글을 찾을 수 없습니다.")
-        );
+        return commentRepository.findFirstByCardIdOrderByCreateAtDesc(cardId)
+            .orElseThrow(() -> new CommentNotFoundException("댓글을 찾을 수 없습니다."));
     }
 }

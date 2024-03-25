@@ -16,8 +16,8 @@ public class ColumnDetailResponse {
     private List<CardDetailResponse> cards = new ArrayList<>();
 
     public ColumnDetailResponse(Column column) {
-        this.columnId = column.getId();
-        this.columnName = column.getColumn_name();
+        this.columnId = column.getColumnId();
+        this.columnName = column.getColumnName();
     }
 
     public void addCard(Card card) {

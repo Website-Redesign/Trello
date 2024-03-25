@@ -15,7 +15,12 @@ public class TimeTraceAspect {
     public Object execute(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         try {
-            return joinPoint.proceed();
+            Object result = joinPoint.proceed();
+            return result;
+        } catch (Throwable ex) {
+            log.error("Exception occurred in method: {}", joinPoint.getSignature().toShortString(),
+                ex);
+            throw ex;
         } finally {
             long finish = System.currentTimeMillis();
             long timeMs = finish - start;

@@ -5,10 +5,14 @@ import com.example.trello.domain.column.dto.ColumnResponseDto;
 import com.example.trello.domain.column.entity.Column;
 import com.example.trello.domain.column.repository.ColumnRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -16,31 +20,54 @@ public class ColumnService {
 
     private final ColumnRepository columnRepository;
 
+    private final CacheManager cacheManager;
+
     @Transactional
-    public void createColumn(Long boardId, ColumnRequestDto columnRequestDto) {
-        Column column = new Column(columnRequestDto);
-        column.setBoardId(boardId);
-        columnRepository.save(column);
+    public ColumnResponseDto createColumn(Long boardId, ColumnRequestDto requestDto) {
+        Column column = new Column();
+        column.setColumnName(requestDto.getColumnName());
+        Column savedColumn = columnRepository.save(column);
+        return new ColumnResponseDto(savedColumn);
     }
 
     @Transactional(readOnly = true)
-    public ColumnResponseDto getColumns(Long boardId, Long columnId, int page, int size) {
-        Column column = columnRepository.findById(columnId)
-                .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 컬럼을 찾을 수 없습니다:" + columnId));
-        Page<Column> columnPage = columnRepository.findColumnsByBoardId(boardId, PageRequest.of(page - 1, size));
-        return new ColumnResponseDto((Column) columnPage.getContent());
+    public Page<ColumnResponseDto> getColumn(Long boardId, Long columnId, Pageable pageable) {
+        Column column = existsByColumnIdAndBoardId(columnId, boardId);
+        Page<Column> columnPage = columnRepository.findColumnsByBoardIdAndUserId(boardId, pageable);
+        return columnPage.map(ColumnResponseDto::new);
     }
 
     @Transactional
-    public void updateColumnName(Long boardId, Long columnId, ColumnRequestDto columnRequestDto) {
-        Column column = columnRepository.findById(columnId)
-                .orElseThrow(() -> new IllegalArgumentException("ID에 해당하는 컬럼을 찾을 수 없습니다:" + columnId));
-        column.setColumnName(columnRequestDto.getColumn_name());
-        columnRepository.save(column);
+    public ColumnResponseDto updateColumnName(Long boardId, Long columnId, ColumnRequestDto requestDto) {
+        Column column = existsByColumnIdAndBoardId(columnId, boardId);
+        column.setColumnName(requestDto.getColumnName());
+        Column updatedColumn = columnRepository.save(column);
+
+        Objects.requireNonNull(cacheManager.getCache("column")).put(columnId, new ColumnResponseDto(updatedColumn));
+
+        return new ColumnResponseDto(updatedColumn);
     }
 
     @Transactional
-    public void deleteColumns(Long boardId, Long columnId) {
-        columnRepository.deleteById(columnId);
+    public void deleteColumn(Long boardId, Long columnId) {
+        columnRepository.deleteColumnByIdAndBoardIdAndUserId(columnId, boardId);
+    }
+
+    @Transactional
+    public void moveColumn(Long boardId, Long columnId) {
+
+        Column columnToMove = existsByColumnIdAndBoardId(columnId, boardId);
+
+        List<Column> columns = columnRepository.findByBoardIdOrderByPosition(boardId);
+
+        columns.remove(columnToMove);
+        columns.add(columnToMove);
+
+        columnRepository.saveAll(columns);
+    }
+
+    private Column existsByColumnIdAndBoardId(Long columnId, Long boardId) {
+        return columnRepository.findByIdAndBoardId(columnId, boardId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 칼럼입니다."));
     }
 }

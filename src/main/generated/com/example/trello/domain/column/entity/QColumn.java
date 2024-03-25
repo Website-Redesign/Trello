@@ -23,7 +23,7 @@ public class QColumn extends EntityPathBase<Column> {
 
     public final NumberPath<Long> boardId = createNumber("boardId", Long.class);
 
-    public final StringPath column_name = createString("column_name");
+    public final StringPath columnName = createString("columnName");
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> createAt = _super.createAt;
@@ -31,7 +31,7 @@ public class QColumn extends EntityPathBase<Column> {
     //inherited
     public final DateTimePath<java.time.LocalDateTime> deletedAt = _super.deletedAt;
 
-    public final NumberPath<Long> id = createNumber("id", Long.class);
+    public final NumberPath<Long> columnId = createNumber("columnId", Long.class);
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedAt = _super.updatedAt;
