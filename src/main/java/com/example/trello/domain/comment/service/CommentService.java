@@ -30,7 +30,7 @@ public class CommentService {
 
         String nickname = userService.findNickname(user.getId());
 
-        Comment comment = new Comment(commentRequestDto.getComment(), card.getId(), user.getId(),
+        Comment comment = new Comment(commentRequestDto.getComment(), user.getId(), card.getId(),
             nickname);
 
         commentRepository.save(comment);
@@ -68,9 +68,7 @@ public class CommentService {
     }
 
     public Comment findLatestComment(Long cardId) {
-        return commentRepository.findFirstByCardIdOrderByCreateAtDesc(
-            cardId).orElseThrow(
-            () -> new IllegalArgumentException("댓글을 찾을 수 없습니다.")
-        );
+        return commentRepository.findFirstByCardIdOrderByCreateAtDesc(cardId)
+            .orElseThrow(() -> new CommentNotFoundException("댓글을 찾을 수 없습니다."));
     }
 }
